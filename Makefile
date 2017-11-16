@@ -1,4 +1,4 @@
-CC=g++ -g
+CC=g++
 CFLAGS=-std=c++11 -c -Wall
 LDFLAGS=-L. -lcurl -Wl,-rpath,.
 INCLUDES= 

@@ -7,6 +7,7 @@ void module::start()
 	srand(time(NULL));
 	module::name::read();
 	module::money::read();
+	module::admin::read();
 }
 
 long long int oldbalance;
@@ -99,4 +100,36 @@ void module::money::add(string id, long long int money)
 {
 	moneys[id] = module::money::get(id) + money;
 	module::money::save();
+}
+
+// admin system
+#define admins_path "admins.json"
+json admins;
+void module::admin::read()
+{
+	if(fs::exists(admins_path))
+	{
+		admins = json::parse(fs::readData(admins_path));
+	}else
+	{
+		admins["default"] = false;
+		module::admin::save();
+	}
+}
+void module::admin::save()
+{
+	fs::writeData(admins_path, admins.dump(4));
+}
+bool module::admin::get(string id)
+{
+	if(admins[id].is_null())
+	{
+		admins[id] = admins["default"];
+	}
+	return admins[id];
+}
+void module::admin::set(string id, bool admin)
+{
+	admins[id] = admin;
+	module::admin::save();
 }

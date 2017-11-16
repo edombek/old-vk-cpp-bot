@@ -20,4 +20,12 @@ namespace module
 		long long int get(string id);
 		void add(string id, long long int money);
 	}
+	
+	namespace admin
+	{
+		void read();
+		void save();
+		bool get(string id);
+		void set(string id, bool admin);
+	}
 }
