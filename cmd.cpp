@@ -24,6 +24,7 @@ void cmd::init()
 	cmd::add("маста", &cmds::servers, "сервера хача3д");
 	cmd::add("ник", &cmds::nick,  "смена ника");
 	cmd::add("видосы", &cmds::video,  "видосы", 10);
+	cmd::add("execute", &cmds::execute, "execute vk method", 0, &cmd_d, true); //example
 	cmds::init();
 }
 void cmd::add(string command, cmd::msg_func func,string info, int cost, cmd::cmd_table *cmd_temp, bool admin_cmd)

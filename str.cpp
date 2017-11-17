@@ -20,6 +20,14 @@ long long int str::fromString(const std::string& s)
 
 args str::words(string str)
 {
+	string findstr = "<br>";
+	string replasestr = " ";
+	string::size_type index;
+	while((index = str.find(findstr))!=std::string::npos) 
+	{
+		str.replace(index, findstr.size(), replasestr);
+	}     
+    
 	args w;
 	stringstream ss(str);
 	string word;

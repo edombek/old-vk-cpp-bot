@@ -6,6 +6,7 @@ namespace cmds
 	table servers(message::msg msg, table rmsg); 
 	table nick(message::msg msg, table rmsg);
 	table video(message::msg msg, table rmsg);
+	table execute(message::msg msg, table rmsg);
 	namespace money
 	{
 		table help(message::msg msg, table rmsg);
