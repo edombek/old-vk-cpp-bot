@@ -5,7 +5,7 @@
 
 #define out 0x02
 
-std::chrono::time_point<std::chrono::high_resolution_clock> start, stop;
+std::chrono::time_point<std::chrono::system_clock> start, stop;
 
 void message::load(json dat)
 {
