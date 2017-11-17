@@ -2,8 +2,6 @@
 #include "common.h"
 #include<iostream>
 
-#pragma comment(lib,"libcurl.lib") 
-
 #define net_agent "EVGESHAd agent"
 
 /* Init network settings */

@@ -37,7 +37,6 @@ void cmd::add(string command, cmd::msg_func func,string info, int cost, cmd::cmd
 table cmd::start(message::msg msg, table rmsg, string command, cmd::cmd_table *cmd_temp)
 {
 	if(cmd_temp==NULL)cmd_temp=&cmd_d;
-	cout << &cmd_d << " " << cmd_temp << " '" << (*cmd_temp).find(command)->first << "'" << endl;
 	if((*cmd_temp).find(command)->first != "")
 	{
 		if(module::money::get(other::getId(msg))<(*cmd_temp)[command].cost)

@@ -46,7 +46,7 @@ std::string to_string(std::wstring const& s) {
 string str::summ(args words, int s)
 {
 	string r = "";
-	for(int i = s; i < words.size(); i++)
+	for(unsigned int i = s; i < words.size(); i++)
 	{
 		r += words[i];
 		r+= " ";
@@ -66,7 +66,7 @@ string str::low(string str)
 {
 	auto ss = to_wstring(str);
 	for (auto& c : ss) {
-		c = std::toupper(c, utf8);
+		c = std::tolower(c, utf8);
 	}
 	return to_string(ss);
 }

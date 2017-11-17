@@ -25,7 +25,6 @@ void message::load(json dat)
 	if(!msg.words.size())return;
 	if(message::isChat(msg) && !message::toMe(msg.words[0], botname)) return;
 	if((message::toMe(msg.words[0], botname))) msg.words.erase(msg.words.begin());
-	cout << msg.msg[5] << endl;
 	if(1 > msg.words.size())
 	{
 		msg.words.push_back("help");
@@ -63,7 +62,7 @@ table message::postTR(table rmsg)
 bool message::toMe(string word, args names)
 {
 	if(word[word.size()-1] == ',') word.resize(word.size()-1);
-	for(int i = 0; i < names.size(); i++)
+	for(unsigned int i = 0; i < names.size(); i++)
 	{
 		if(str::low(names[i]) == str::low(word)) return true;
 	}
