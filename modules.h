@@ -28,4 +28,12 @@ namespace module
 		bool get(string id);
 		void set(string id, bool admin);
 	}
+	
+	namespace phrase
+	{
+		void read();
+		void save();
+		string get();
+		void add(string add);
+	}
 }

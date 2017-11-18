@@ -99,7 +99,7 @@ table cmds::servers(message::msg msg, table rmsg)
 	return rmsg;
 }
 
-table cmds::nick(message::msg msg, table rmsg) //example
+table cmds::nick(message::msg msg, table rmsg)
 {
 	if(msg.words.size() < 2)
 	{
@@ -145,18 +145,14 @@ table cmds::video(message::msg msg, table rmsg)
 	return rmsg;
 }
 
-table cmds::execute(message::msg msg, table rmsg)
+table cmds::phrase(message::msg msg, table rmsg)
 {
 	if(msg.words.size() < 2)
 	{
 		rmsg["message"]+="я чо Ванга?";
 		return rmsg;
 	}
-	table params;
-	cout << str::summ(msg.words, 1) << endl;
-	params["code"]+=str::summ(msg.words, 1);
-	json res = vk::send("execute", params);
-	rmsg["message"]+="выполнил):<br>";
-	rmsg["message"]+=res.dump(4);
+	module::phrase::add(str::summ(msg.words, 1));
+	rmsg["message"]+="добавил)";
 	return rmsg;
 }

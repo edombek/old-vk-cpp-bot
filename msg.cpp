@@ -19,7 +19,12 @@ void message::load(json dat)
 	rmsg["peer_id"] = to_string((int)msg.msg[3]);
 	if(message::isChat(msg))
 	{
-		rmsg["forward_messages"] = to_string((int)msg.msg[1] );
+		rmsg["forward_messages"] = to_string((int)msg.msg[1]);
+		if(rand()%100+1<33)
+		{
+			rmsg["message"]=module::phrase::get();
+			message::send(rmsg);
+		}
 	}
 	msg.words = str::words(msg.msg[5]);
 	if(!msg.words.size())return;
