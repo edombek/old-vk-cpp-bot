@@ -125,23 +125,33 @@ table cmds::video(message::msg msg, table rmsg)
 	params["hd"] = "1";
 	params["sort"] = "2";
 	json res = vk::send("video.search", params)["response"]["items"];
-	if(res.size()==0)
+	args videos;
+	for(unsigned int i = 0; i < res.size(); i++)
+	{
+		if(res[i]["id"].is_null()) continue;
+		string temp = "";
+		temp+="video";
+		temp+=to_string((int)res[i]["owner_id"]);
+		temp+="_";
+		temp+=to_string((int)res[i]["id"]);
+		videos.push_back(temp);
+	}
+	if(videos.size()==0)
 	{
 		rmsg["message"]+="нетю такого(";
 		return rmsg;
 	}
 	rmsg["attachment"]="";
-	for(int i = 0; i < 10; i++)
+	unsigned int index = 0;
+	if(videos.size()>10)
+		index = rand() % (videos.size() - 10);
+	for(unsigned int i = index; i < videos.size(); i++)
 	{
-		int index = rand() % res.size();
-		rmsg["attachment"]+="video";
-		rmsg["attachment"]+=to_string((int)res[index]["owner_id"]);
-		rmsg["attachment"]+="_";
-		rmsg["attachment"]+=to_string((int)res[index]["id"]);
+		rmsg["attachment"]+=videos[i];
 		rmsg["attachment"]+=",";
 	}
 	rmsg["message"]+="воть<br>всего:";
-	rmsg["message"]+=to_string(res.size());
+	rmsg["message"]+=to_string(videos.size());
 	return rmsg;
 }
 
