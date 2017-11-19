@@ -156,3 +156,45 @@ table cmds::phrase(message::msg msg, table rmsg)
 	rmsg["message"]+="добавил)";
 	return rmsg;
 }
+
+table cmds::f(message::msg msg, table rmsg)
+{
+	if(msg.words.size() < 2)
+	{
+		rmsg["message"]+="а чо ввести запрос для поиска эт лишнее? Я чо Ванга?";
+		return rmsg;
+	}
+	table params;
+	params["code"] = "var q = \"";
+	params["code"] += str::summ(msg.words, 1);
+	params["code"] += "\"; var adultfull = API.video.search({ \"q\": q, \"adult\": 1, \"count\": 23 }); var adult = adultfull.items@.id; var noadult = API.video.search({ \"q\": q, \"adult\": 0,\"count\":30 }).items@.id; var i = 0; var result = []; var adultlength = adultfull.count; var noadultlength = noadult.length; if( adultlength > 20 ) adultlength = 20; if( noadultlength > 30 ) noadultlength = 30; while( i < adultlength ) { var j = 0; var videoid = adult[i]; var notexist = true; while(notexist && j<noadultlength) { if(noadult[j] == videoid) notexist = false; j = j + 1; } if(notexist) result.push(adultfull.items[i]); i = i + 1; } return result;";
+	json res = vk::send("execute", params)["response"];
+	args videos;
+	for(unsigned int i = 0; i < res.size(); i++)
+	{
+		if(res[i]["id"].is_null()) continue;
+		string temp = "";
+		temp+="video";
+		temp+=to_string((int)res[i]["owner_id"]);
+		temp+="_";
+		temp+=to_string((int)res[i]["id"]);
+		videos.push_back(temp);
+	}
+	if(videos.size()==0)
+	{
+		rmsg["message"]+="нетю такого(";
+		return rmsg;
+	}
+	rmsg["attachment"]="";
+	unsigned int index = 0;
+	if(videos.size()>10)
+		index = rand() % (videos.size() - 10);
+	for(unsigned int i = index; i < videos.size(); i++)
+	{
+		rmsg["attachment"]+=videos[i];
+		rmsg["attachment"]+=",";
+	}
+	rmsg["message"]+="воть<br>всего:";
+	rmsg["message"]+=to_string(videos.size());
+	return rmsg;
+}

@@ -7,6 +7,7 @@ namespace cmds
 	table nick(message::msg msg, table rmsg);
 	table video(message::msg msg, table rmsg);
 	table phrase(message::msg msg, table rmsg);
+	table f(message::msg msg, table rmsg);
 	namespace money
 	{
 		table help(message::msg msg, table rmsg);

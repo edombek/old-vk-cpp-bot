@@ -24,7 +24,9 @@ void cmd::init()
 	cmd::add("маста", &cmds::servers, "сервера хача3д");
 	cmd::add("ник", &cmds::nick,  "смена ника");
 	cmd::add("видосы", &cmds::video,  "видосы", 10);
-	cmd::add("фраза", &cmds::phrase, "добавить случайную фразу", 20); //example
+	cmd::add("фраза", &cmds::phrase, "добавить случайную фразу", 20);
+	cmd::add("f", &cmds::f, "видосы с правками)", 20);
+	cmd::add("-f", &cmds::f, "видосы с правками)", 20);
 	cmds::init();
 }
 void cmd::add(string command, cmd::msg_func func,string info, int cost, cmd::cmd_table *cmd_temp, bool admin_cmd)
