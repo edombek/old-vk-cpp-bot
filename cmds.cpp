@@ -14,9 +14,9 @@ table cmds::money::help(message::msg msg, table rmsg)
 	rmsg["message"]+="команды:<br>";
 	for(auto cmd_temp: cmds_money)
 	{
-		rmsg["message"]+="<br> - ";
+		rmsg["message"]+="<br> - \"";
 		rmsg["message"]+=str::low(cmd_temp.first);
-		rmsg["message"]+=" ";
+		rmsg["message"]+="\" - ";
 		rmsg["message"]+=cmd_temp.second.info;
 	}
 	return rmsg;

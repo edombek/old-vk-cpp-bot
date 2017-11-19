@@ -8,9 +8,9 @@ table help(message::msg msg, table rmsg)
 	for(auto cmd_temp: cmd_d)
 	{
 		if(!module::admin::get(other::getId(msg))&cmd_temp.second.admin_cmd) continue;
-		rmsg["message"]+="<br> - ";
+		rmsg["message"]+="<br> - \"";
 		rmsg["message"]+=str::low(cmd_temp.first);
-		rmsg["message"]+=" ";
+		rmsg["message"]+="\" - ";
 		rmsg["message"]+=cmd_temp.second.info;
 	}
 	return rmsg;
