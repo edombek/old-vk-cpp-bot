@@ -6,4 +6,5 @@ namespace other
 	string getTime();
 	string getRealTime();
 	string getId(message::msg msg);
+	json jsonDifferenceArr(json j1, json j2);
 }
