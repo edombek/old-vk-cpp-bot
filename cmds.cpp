@@ -118,12 +118,14 @@ table cmds::video(message::msg msg, table rmsg)
 		rmsg["message"]+="а чо ввести запрос для поиска эт лишнее? Я чо Ванга?";
 		return rmsg;
 	}
-	table params;
-	params["q"]+=str::summ(msg.words, 1);
-	params["adult"] = "1";
-	params["count"] = "200";
-	params["hd"] = "1";
-	params["sort"] = "2";
+	table params =
+	{
+		{"q", str::summ(msg.words, 1)},
+		{"adult", "1"},
+		{"count", "200"},
+		{"hd", "1"},
+		{"sort", "2"}
+	};
 	json res = vk::send("video.search", params)["response"]["items"];
 	args videos;
 	for(unsigned int i = 0; i < res.size(); i++)
@@ -174,11 +176,17 @@ table cmds::f(message::msg msg, table rmsg)
 		rmsg["message"]+="а чо ввести запрос для поиска эт лишнее? Я чо Ванга?";
 		return rmsg;
 	}
-	table params;
-	params["code"] = "var q = \"";
-	params["code"] += str::summ(msg.words, 1);
-	params["code"] += "\"; var adultfull = API.video.search({ \"q\": q, \"adult\": 1, \"count\": 23 }); var adult = adultfull.items@.id; var noadult = API.video.search({ \"q\": q, \"adult\": 0,\"count\":30 }).items@.id; var i = 0; var result = []; var adultlength = adultfull.count; var noadultlength = noadult.length; if( adultlength > 20 ) adultlength = 20; if( noadultlength > 30 ) noadultlength = 30; while( i < adultlength ) { var j = 0; var videoid = adult[i]; var notexist = true; while(notexist && j<noadultlength) { if(noadult[j] == videoid) notexist = false; j = j + 1; } if(notexist) result.push(adultfull.items[i]); i = i + 1; } return result;";
-	json res = vk::send("execute", params)["response"];
+	table params =
+	{
+		{"q", str::summ(msg.words, 1)},
+		{"adult", "1"},
+		{"count", "200"},
+		{"hd", "1"},
+		{"sort", "2"}
+	};
+	json res = vk::send("video.search", params)["response"]["items"];
+	params["adult"] = "0";
+	res = other::jsonDifferenceArr(res, vk::send("video.search", params)["response"]["items"]);
 	args videos;
 	for(unsigned int i = 0; i < res.size(); i++)
 	{
