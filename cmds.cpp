@@ -4,21 +4,14 @@
 cmd::cmd_table cmds_money;
 void cmds::init()
 {
-	cmd::add("help", &cmds::money::help, "хелп", 0, &cmds_money);
-	cmd::add("баланс", &cmds::money::balanse, "мой баланс", 0, &cmds_money);
-	cmd::add("лотерея", &cmds::money::lotery, "лотерея", 0, &cmds_money);
+	cmd::add("help", &cmds::money::help, false, "хелп", 0, &cmds_money);
+	cmd::add("баланс", &cmds::money::balanse, true, "мой баланс", 0, &cmds_money);
+	cmd::add("лотерея", &cmds::money::lotery, true, "лотерея", 0, &cmds_money);
 }
 
 table cmds::money::help(message::msg msg, table rmsg)
 {
-	rmsg["message"]+="команды:<br>";
-	for(auto cmd_temp: cmds_money)
-	{
-		rmsg["message"]+="<br> - \"";
-		rmsg["message"]+=str::low(cmd_temp.first);
-		rmsg["message"]+="\" - ";
-		rmsg["message"]+=cmd_temp.second.info;
-	}
+	rmsg["message"]+=cmd::helpList(&cmds_money, msg);
 	return rmsg;
 }
 

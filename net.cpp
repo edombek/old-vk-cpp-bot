@@ -84,7 +84,7 @@ string net::send(string url, const char *post, fs::file* _file)
 			return nullptr;
 		string data = *memory;
 		delete memory;
-		//cout << data << endl;
+		cout << data << endl;
 		return data;
 	}
 	throw new net::exception("curl not created", -1);
