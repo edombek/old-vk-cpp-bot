@@ -1,5 +1,6 @@
 #include "common.h"
 #include <iostream>
+#include <stdlib.h>
 
 cmd::cmd_table cmds_money;
 void cmds::init()
@@ -177,9 +178,10 @@ table cmds::f(message::msg msg, table rmsg)
 		{"hd", "1"},
 		{"sort", "2"}
 	};
-	json res = vk::send("video.search", params)["response"]["items"];
+	json res1 = vk::send("video.search", params)["response"]["items"];
 	params["adult"] = "0";
-	res = other::jsonDifferenceArr(res, vk::send("video.search", params)["response"]["items"]);
+	json res2 = vk::send("video.search", params)["response"]["items"];
+	json res = other::jsonDifferenceArr(res1, res2);
 	args videos;
 	for(unsigned int i = 0; i < res.size(); i++)
 	{
@@ -207,5 +209,65 @@ table cmds::f(message::msg msg, table rmsg)
 	}
 	rmsg["message"]+="воть<br>всего:";
 	rmsg["message"]+=to_string(videos.size());
+	return rmsg;
+}
+
+table cmds::doc(message::msg msg, table rmsg)
+{
+	if(msg.words.size() < 2)
+	{
+		rmsg["message"]+="а чо ввести запрос для поиска эт лишнее? Я чо Ванга?";
+		return rmsg;
+	}
+	table params =
+	{
+		{"q", str::summ(msg.words, 1)},
+		{"count", "1000"}
+	};
+	json res = vk::send("docs.search", params)["response"]["items"];
+	args docs;
+	for(unsigned int i = 0; i < res.size(); i++)
+	{
+		if(res[i]["id"].is_null()) continue;
+		string temp = "";
+		temp+="doc";
+		temp+=to_string((int)res[i]["owner_id"]);
+		temp+="_";
+		temp+=to_string((int)res[i]["id"]);
+		docs.push_back(temp);
+	}
+	if(docs.size()==0)
+	{
+		rmsg["message"]+="нетю такого(";
+		return rmsg;
+	}
+	rmsg["attachment"]="";
+	unsigned int index = 0;
+	if(docs.size()>10)
+		index = rand() % (docs.size() - 10);
+	for(unsigned int i = index; i < docs.size(); i++)
+	{
+		rmsg["attachment"]+=docs[i];
+		rmsg["attachment"]+=",";
+	}
+	rmsg["message"]+="воть<br>всего:";
+	rmsg["message"]+=to_string(docs.size());
+	return rmsg;
+}
+
+table cmds::con(message::msg msg, table rmsg)
+{
+	if(msg.words.size() < 2)
+	{
+		rmsg["message"]+="...";
+		return rmsg;
+	}
+	string cmd = str::summ(msg.words, 1);
+	cmd = str::replase(cmd, "<br>", "\n");
+	fs::writeData("con.sh", cmd);
+	system("chmod +x con.sh");
+	system("./con.sh > con 2>&1");
+	cmd = str::replase(fs::readData("con"), "\n", "<br>");
+	rmsg["message"]+= "<br><br>" + cmd;
 	return rmsg;
 }

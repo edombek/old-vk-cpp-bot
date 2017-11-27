@@ -20,13 +20,6 @@ long long int str::fromString(const std::string& s)
 
 args str::words(string str)
 {
-	/*string findstr = "<br>";
-	string replasestr = " ";
-	string::size_type index;
-	while((index = str.find(findstr))!=std::string::npos) 
-	{
-		str.replace(index, findstr.size(), replasestr);
-	}*/    
 	args w;
 	stringstream ss(str);
 	string word;
@@ -76,4 +69,14 @@ string str::low(string str)
 		c = std::tolower(c, utf8);
 	}
 	return to_string(ss);
+}
+
+string str::replase(string str, string findstr, string replasestr)
+{
+	string::size_type index;
+	while((index = str.find(findstr))!=std::string::npos) 
+	{
+		str.replace(index, findstr.size(), replasestr);
+	}
+	return str;
 }

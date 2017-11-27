@@ -33,7 +33,9 @@ string fs::file::read()
 	string line;
 	while (std::getline(this->_stream, line)) {
 		data += line;
+		data += "\n";
 	}
+	data.resize(data.size()-1);
 	return data;
 }
 
