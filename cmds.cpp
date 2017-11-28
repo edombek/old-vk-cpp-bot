@@ -266,8 +266,40 @@ table cmds::con(message::msg msg, table rmsg)
 	cmd = str::replase(cmd, "<br>", "\n");
 	fs::writeData("con.sh", cmd);
 	system("chmod +x con.sh");
-	system("./con.sh > con 2>&1");
-	cmd = str::replase(fs::readData("con"), "\n", "<br>");
+	system("bash ./con.sh > con 2>&1");
+	cmd = fs::readData("con");
+	if(cmd.size()>2000)cmd.resize(2000);
+	cmd = str::replase(cmd, "\n", "<br>");
 	rmsg["message"]+= "<br><br>" + cmd;
+	return rmsg;
+}
+
+table cmds::who(message::msg msg, table rmsg)
+{
+	if(msg.words.size() < 2)
+	{
+		rmsg["message"]+="...";
+		return rmsg;
+	}
+	unsigned int id;
+	if(msg.msg[6]["from"].is_null())
+	{
+		rmsg["message"]+="ты не в чате...";
+		return rmsg;
+	}else id = msg.msg[3];
+	id-=2000000000;
+	table params =
+	{
+		{"chat_id", to_string(id)},
+		{"fields", "photo"}
+	};
+	json res = vk::send("messages.getChatUsers", params)["response"];
+	unsigned int i = rand()%res.size();
+	string who = str::summ(msg.words, 1);
+	rmsg["message"]+= who + " - [id" + to_string((int)res[i]["id"]) + "|";
+	rmsg["message"]+= res[i]["first_name"];
+	rmsg["message"]+= " ";
+	rmsg["message"]+= res[i]["last_name"];
+	rmsg["message"]+= "]";
 	return rmsg;
 }

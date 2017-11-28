@@ -44,6 +44,7 @@ void cmd::init()
 	cmd::add("-f", &cmds::f, false, "видосы с правками)", 20);
 	cmd::add("доки", &cmds::doc, true, "доки", 10);
 	cmd::add("con", &cmds::con, true, "консолька)", 0, &cmd_d, true);
+	cmd::add("кто", &cmds::who, true, "ыыы", 1);
 	cmds::init();
 }
 void cmd::add(string command, cmd::msg_func func, bool disp, string info, int cost, cmd::cmd_table *cmd_temp, bool admin_cmd)

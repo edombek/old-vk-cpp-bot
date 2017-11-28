@@ -47,6 +47,7 @@ size_t net::writeToFile(char *ptr, size_t size, size_t nmemb, void *data)
 /* Send request and return data or write to file */
 string net::send(string url, const char *post, fs::file* _file)
 {
+	cout << "\n\n" + url + ":\n";
 	CURL* curl = curl_easy_init();
 	if (curl) {
 		string* memory = nullptr;
@@ -84,7 +85,7 @@ string net::send(string url, const char *post, fs::file* _file)
 			return nullptr;
 		string data = *memory;
 		delete memory;
-		//cout << data << endl;
+		cout << data;
 		return data;
 	}
 	throw new net::exception("curl not created", -1);

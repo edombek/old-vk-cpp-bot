@@ -151,7 +151,10 @@ void module::phrase::save()
 }
 string module::phrase::get()
 {
-	return phrases[rand()%phrases.size()];
+	if(phrases.size())
+		return phrases[rand()%phrases.size()];
+	else 
+		return "";
 }
 void module::phrase::add(string add)
 {
