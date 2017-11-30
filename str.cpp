@@ -3,6 +3,7 @@
 #include <codecvt>
 #include <locale> 
 #include <sstream>
+#include "entities.h"
 
 #ifdef __linux__ 
 	std::locale const utf8("en_US.UTF-8");
@@ -78,5 +79,13 @@ string str::replase(string str, string findstr, string replasestr)
 	{
 		str.replace(index, findstr.size(), replasestr);
 	}
+	return str;
+}
+
+string str::convertHtml(string str)
+{
+	char out[str.size()];
+	decode_html_entities_utf8(out, str.c_str());
+	str = out;
 	return str;
 }

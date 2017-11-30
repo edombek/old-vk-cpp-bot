@@ -264,9 +264,10 @@ table cmds::con(message::msg msg, table rmsg)
 	}
 	string cmd = str::summ(msg.words, 1);
 	cmd = str::replase(cmd, "<br>", "\n");
+	cmd = str::convertHtml(cmd);
 	fs::writeData("con.sh", cmd);
 	system("chmod +x con.sh");
-	system("bash ./con.sh > con 2>&1");
+	system("sh ./con.sh > con 2>&1");
 	cmd = fs::readData("con");
 	if(cmd.size()>2000)cmd.resize(2000);
 	cmd = str::replase(cmd, "\n", "<br>");

@@ -7,4 +7,5 @@ namespace str
 	bool at(string str1, string str2);
 	string low(string str);
 	string replase(string str, string findstr, string replasestr);
+	string convertHtml(string str);
 }

@@ -71,15 +71,8 @@ string net::send(string url, const char *post, fs::file* _file)
 			curl_easy_setopt(curl, CURLOPT_POST, 1);
 			curl_easy_setopt(curl, CURLOPT_POSTFIELDS, post);
 		}
-
-		CURLcode code = curl_easy_perform(curl);
+		
 		curl_easy_cleanup(curl);
-
-		if (code != CURLE_OK)
-		{
-			cout << "CURL (" << code << "): " << curl_easy_strerror(code) << endl;
-			throw new net::exception(curl_easy_strerror(code), code);
-		}
 
 		if (_file != nullptr)
 			return nullptr;
