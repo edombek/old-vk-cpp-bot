@@ -20,14 +20,14 @@ void vk::start()
 		data_temp = json::parse(fs::readData(config));
 		vk::setToken(data_temp["token"]);
 	}
-	auto data = vk::send("stats.trackVisitor");
+	auto data = vk::send("users.get");
 	if (!data["error"].is_null())
 	{
 		cout << "invalid vk_token" << endl;
 		data_temp["token"] = "put vk tocken here (vkhost.github.io)";
 		fs::writeData(config, data_temp.dump(4));
 	}
-	vk::setId(vk::send("users.get")["response"][0]["id"]);
+	vk::setId(data["response"][0]["id"]);
 	cout << "my id: " << vk::getId() << endl;
 }
 

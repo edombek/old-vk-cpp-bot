@@ -71,7 +71,7 @@ string net::send(string url, const char *post, fs::file* _file)
 			curl_easy_setopt(curl, CURLOPT_POST, 1);
 			curl_easy_setopt(curl, CURLOPT_POSTFIELDS, post);
 		}
-		
+		curl_easy_perform(curl);
 		curl_easy_cleanup(curl);
 
 		if (_file != nullptr)
