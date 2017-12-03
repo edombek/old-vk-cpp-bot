@@ -7,7 +7,7 @@
 
 std::chrono::time_point<std::chrono::system_clock> start, stop;
 
-#define PERSENT 10
+#define PERSENT 2
 
 void message::load(json dat)
 {
@@ -21,7 +21,7 @@ void message::load(json dat)
 	rmsg["peer_id"] = to_string((int)msg.msg[3]);
 	if(message::isChat(msg))
 	{
-		if(rand()%100000+1<1000*PERSENT)
+		if(rand()%10000+1<100*PERSENT)
 		{
 			rmsg["message"]=module::phrase::get();
 			message::send(rmsg);

@@ -255,6 +255,7 @@ table cmds::doc(message::msg msg, table rmsg)
 	return rmsg;
 }
 
+#define max_size 2000
 table cmds::con(message::msg msg, table rmsg)
 {
 	if(msg.words.size() < 2)
@@ -267,11 +268,33 @@ table cmds::con(message::msg msg, table rmsg)
 	cmd = str::convertHtml(cmd);
 	fs::writeData("con.sh", cmd);
 	system("chmod +x con.sh");
-	system("sh ./con.sh > con 2>&1");
+	system("./con.sh > con 2>&1");
 	cmd = fs::readData("con");
-	if(cmd.size()>2000)cmd.resize(2000);
-	cmd = str::replase(cmd, "\n", "<br>");
-	rmsg["message"]+= "<br><br>" + cmd;
+	string temp = "";
+	args out;
+	for(unsigned i = 0; i < cmd.size(); i++)
+	{
+		temp.push_back(cmd[i]);
+		if(temp.size() > max_size && (cmd.size() > i +1 && cmd[i+1]!='\n'))
+		{
+			temp = str::replase(temp, "\n", "<br>");
+			out.push_back(temp);
+			temp = "";
+		}
+	}
+	if(!out.size())
+	{
+		temp = str::replase(temp, "\n", "<br>");
+		out.push_back(temp);
+		temp = "";
+	}
+	for(unsigned i = 0; i < out.size(); i++)
+	{
+		rmsg["message"]+= "<br><br>" + out[i];
+		if(out.size() <= 1 || i == out.size()-1)break;
+		message::send(rmsg);
+		rmsg["message"]= "";
+	}
 	return rmsg;
 }
 

@@ -1,6 +1,9 @@
 #include <curl/curl.h>
 #include "common.h"
 #include<iostream>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #define net_agent "EVGESHAd agent"
 
@@ -23,7 +26,6 @@ string net::c_nettest(std::vector<std::string> cmd_args)
 string net::urlEncode(string str)
 {
 	char* esc_text = curl_easy_escape(NULL, str.c_str(), str.length());
-	if (!esc_text) throw runtime_error("Can not convert string to URL");
 	string result = esc_text;
 	
 	curl_free(esc_text);
@@ -47,7 +49,6 @@ size_t net::writeToFile(char *ptr, size_t size, size_t nmemb, void *data)
 /* Send request and return data or write to file */
 string net::send(string url, const char *post, fs::file* _file)
 {
-	cout << "\n\n" + url + ":\n";
 	CURL* curl = curl_easy_init();
 	if (curl) {
 		string* memory = nullptr;
@@ -78,10 +79,10 @@ string net::send(string url, const char *post, fs::file* _file)
 			return nullptr;
 		string data = *memory;
 		delete memory;
-		cout << data;
+		//cout << data;
 		return data;
 	}
-	throw new net::exception("curl not created", -1);
+	return "...";
 }
 
 /* Send for parametrs */
@@ -102,14 +103,59 @@ string net::send(string url, table params)
 	return net::send(url, &params);
 }
 
-/* CLASS EXCEPTION */
-net::exception::exception(string awhat, int acode)
+int net::upload(string file, string url)
 {
-	this->what_str = awhat;
-	this->code = acode;
-}
+  CURL *curl;
+  CURLcode res;
+  struct stat file_info;
+  double speed_upload, total_time;
+  FILE *fd;
 
-string net::exception::what()
-{
-	return to_string(this->code)+" | "+this->what_str;
+  fd = fopen(file.c_str(), "rb"); /* open file to upload */
+  if(!fd)
+    return 1; /* can't continue */
+
+  /* to get the file size */
+  if(fstat(fileno(fd), &file_info) != 0)
+    return 1; /* can't continue */
+
+  curl = curl_easy_init();
+  if(curl) {
+    /* upload to this place */
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+
+    /* tell it to "upload" to the URL */
+    curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+
+    /* set where to read from (on Windows you need to use READFUNCTION too) */
+    curl_easy_setopt(curl, CURLOPT_READDATA, fd);
+
+    /* and give the size of the upload (optional) */
+    curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE,
+                     (curl_off_t)file_info.st_size);
+
+    /* enable verbose for easier tracing */
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+
+    res = curl_easy_perform(curl);
+    /* Check for errors */
+    if(res != CURLE_OK) {
+      fprintf(stderr, "curl_easy_perform() failed: %s\n",
+              curl_easy_strerror(res));
+
+    }
+    else {
+      /* now extract transfer info */
+      curl_easy_getinfo(curl, CURLINFO_SPEED_UPLOAD, &speed_upload);
+      curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &total_time);
+
+      fprintf(stderr, "Speed: %.3f bytes/sec during %.3f seconds\n",
+              speed_upload, total_time);
+
+    }
+    /* always cleanup */
+    curl_easy_cleanup(curl);
+  }
+  fclose(fd);
+  return 0;
 }

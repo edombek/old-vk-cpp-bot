@@ -13,7 +13,6 @@ SOURCES=	\
 	cmds.cpp \
 	other.cpp \
 	modules.cpp \
-	entities.cpp \
 	main.cpp
 OBJECTS=$(SOURCES:.cpp=.o) 
 EXECUTABLE=vkbot
