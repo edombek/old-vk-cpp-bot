@@ -63,7 +63,7 @@ string net::send(string url, string params)
 		result = curl_easy_perform(curl);
 	}
 	curl_easy_cleanup(curl);
-	//cout << url << "-" << params << "-" << buffer << endl;
+	cout << url << "-" << params << "-" << buffer << endl;
 	if (result == CURLE_OK)
 		return buffer;
 	return "";
@@ -73,35 +73,34 @@ string net::upload(string url, string filename, string params)
 {
 	buffer ="";
 	CURL *curl;
-	CURLcode res;
-	struct stat file_info;
-	double speed_upload, total_time;
-	FILE *fd;
-	fd = fopen(filename.c_str(), "rb"); /* open file to upload */
-	if(fstat(fileno(fd), &file_info) != 0)
-		return "";
-	curl = curl_easy_init();
-	if(curl) {
+	CURLcode result;
+    curl = curl_easy_init();
+	if (curl)
+	{
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-		curl_easy_setopt(curl, CURLOPT_READDATA, fd);
-		curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)file_info.st_size);
-		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 		curl_easy_setopt(curl, CURLOPT_USERAGENT, net_agent);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
-		res = curl_easy_perform(curl);
-		if(res != CURLE_OK) {
-			fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+		if (params != "") {
+			curl_easy_setopt(curl, CURLOPT_POST, 1);
+			curl_easy_setopt(curl, CURLOPT_POSTFIELDS, params.c_str());
 		}
-		else {
-			curl_easy_getinfo(curl, CURLINFO_SPEED_UPLOAD, &speed_upload);
-			curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &total_time);
-			fprintf(stderr, "Speed: %.3f bytes/sec during %.3f seconds\n", speed_upload, total_time);
-		}
-		curl_easy_cleanup(curl);
+		struct curl_httppost *formpost=NULL;
+		struct curl_httppost *lastptr=NULL;
+		curl_formadd(&formpost,
+									&lastptr,
+									CURLFORM_COPYNAME, "file",
+									CURLFORM_FILENAME, filename.c_str(),
+									CURLFORM_FILE, filename.c_str(),
+									CURLFORM_CONTENTTYPE, "multipart/form-data",
+									CURLFORM_END);
+		curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
+		result = curl_easy_perform(curl);
 	}
-	fclose(fd);
-	return buffer;
+	curl_easy_cleanup(curl);
+	cout << url << "-" << params << "-" << buffer << endl;
+	if (result == CURLE_OK)
+		return buffer;
+	return "";
 }
 	
