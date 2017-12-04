@@ -282,16 +282,14 @@ table cmds::con(message::msg msg, table rmsg)
 			temp = "";
 		}
 	}
-	if(!out.size())
-	{
-		temp = str::replase(temp, "\n", "<br>");
-		out.push_back(temp);
-		temp = "";
-	}
+	temp = str::replase(temp, "\n", "<br>");
+	out.push_back(temp);
+	temp = "";
 	for(unsigned i = 0; i < out.size(); i++)
 	{
+		rmsg["message"]+= "<br><br>("+to_string(i+1)+"/"+to_string(out.size())+")<br>";
 		rmsg["message"]+= "<br><br>" + out[i];
-		if(out.size() <= 1 || i == out.size()-1)break;
+		if(out.size() == 1 || i == out.size()-1)break;
 		message::send(rmsg);
 		rmsg["message"]= "";
 	}
