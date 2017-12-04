@@ -11,6 +11,7 @@ namespace cmds
 	table doc(message::msg msg, table rmsg);
 	table con(message::msg msg, table rmsg);
 	table who(message::msg msg, table rmsg);
+	table upload(message::msg msg, table rmsg);
 	namespace money
 	{
 		table help(message::msg msg, table rmsg);

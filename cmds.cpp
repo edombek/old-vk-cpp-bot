@@ -325,3 +325,40 @@ table cmds::who(message::msg msg, table rmsg)
 	rmsg["message"]+= "]";
 	return rmsg;
 }
+
+table cmds::upload(message::msg msg, table rmsg)
+{
+	if(msg.words.size() < 2)
+	{
+		rmsg["message"]+="...";
+		return rmsg;
+	}
+	table params =
+	{
+		{"type", "doc"},
+		{"peer_id", to_string((int)msg.msg[3])}
+	};
+	json res = vk::send("docs.getMessagesUploadServer", params)["response"];
+	string path = str::summ(msg.words, 1);
+	string tmp = net::upload(res["upload_url"], path);
+	if(tmp == "")
+	{
+		rmsg["message"]+="...";
+		return rmsg;
+	}
+	res = json::parse(tmp);
+	params = {};
+	if(res["file"].is_null())
+	{
+		rmsg["message"]+="...";
+		return rmsg;
+	}
+	params["file"] = res["file"];
+	res = vk::send("docs.save", params)/*["response"]*/;
+	rmsg["message"]+=res.dump(4);
+	rmsg["attachment"] = "doc";
+	rmsg["attachment"] += to_string((int)res["response"][0]["owner_id"]);
+	rmsg["attachment"] += "_";
+	rmsg["attachment"] += to_string((int)res["response"][0]["id"]);
+	return rmsg;
+}
