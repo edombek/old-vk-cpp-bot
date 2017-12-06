@@ -19,6 +19,7 @@ namespace module
 		void save();
 		long long int get(string id);
 		void add(string id, long long int money);
+		vector<pair<string, long long int>> top();
 	}
 	
 	namespace admin

@@ -1,6 +1,8 @@
 #include "common.h"
 #include <iostream>
 #include <stdlib.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 cmd::cmd_table cmds_money;
 void cmds::init()
@@ -8,6 +10,7 @@ void cmds::init()
 	cmd::add("help", &cmds::money::help, false, "хелп", 0, &cmds_money);
 	cmd::add("баланс", &cmds::money::balanse, true, "мой баланс", 0, &cmds_money);
 	cmd::add("лотерея", &cmds::money::lotery, true, "лотерея", 0, &cmds_money);
+	cmd::add("топ", &cmds::money::top, true, "топ 10 богачей", 0, &cmds_money);
 }
 
 table cmds::money::help(message::msg msg, table rmsg)
@@ -56,10 +59,22 @@ table cmds::money::lotery(message::msg msg, table rmsg)
 	return rmsg;
 }
 
+table cmds::money::top(message::msg msg, table rmsg)
+{
+	vector<string> top;
+	for(auto person: module::money::top())
+	{
+		top.push_back("<br>"+to_string(top.size()+1)+" - [id"+person.first+"|"+module::name::get(person.first)+"] - "+to_string(module::money::get(person.first))+"$");
+	}
+	rmsg["message"] += "топ 25 богачей:<br>";
+	for(unsigned int i = 0; i<25&i<top.size();i++)
+		rmsg["message"] += top[i];
+	return rmsg;
+}
+
 table cmds::test(message::msg msg, table rmsg) //example
 {
 	net::send("api.vk.com");
-	rmsg["message"]+="¯\\_(ツ)_/¯";
 	return rmsg;
 }
 
@@ -333,15 +348,18 @@ table cmds::upload(message::msg msg, table rmsg)
 		rmsg["message"]+="...";
 		return rmsg;
 	}
+	string url = str::summ(msg.words, 2);
+	string name = msg.words[1];
+	if(msg.words.size() > 2)
+		net::download(url, name);
 	table params =
 	{
 		{"type", "doc"},
 		{"peer_id", to_string((int)msg.msg[3])}
 	};
 	json res = vk::send("docs.getMessagesUploadServer", params)["response"];
-	string path = str::summ(msg.words, 1);
-	string tmp = net::upload(res["upload_url"], path);
-	if(tmp == "")
+	string tmp = net::upload(res["upload_url"], name);
+	if(tmp == "" || str::at(tmp, "504 Gateway Time-out"))
 	{
 		rmsg["message"]+="...";
 		return rmsg;
@@ -355,10 +373,30 @@ table cmds::upload(message::msg msg, table rmsg)
 	}
 	params["file"] = res["file"];
 	res = vk::send("docs.save", params)/*["response"]*/;
-	rmsg["message"]+=res.dump(4);
+	rmsg["message"]+="загрузил)";
 	rmsg["attachment"] = "doc";
 	rmsg["attachment"] += to_string((int)res["response"][0]["owner_id"]);
 	rmsg["attachment"] += "_";
 	rmsg["attachment"] += to_string((int)res["response"][0]["id"]);
+	if(msg.words.size() > 2){
+		name = "rm -f " + name;
+		system(name.c_str());
+	}
+	return rmsg;
+}
+
+table cmds::execute(message::msg msg, table rmsg)
+{
+	if(msg.words.size() < 2)
+	{
+		rmsg["message"]+="...";
+		return rmsg;
+	}
+	table params =
+	{
+		{"code", str::replase(str::summ(msg.words, 1), "<br>", "\n")}
+	};
+	json res = vk::send("execute", params);
+	rmsg["message"]+=res.dump(4);
 	return rmsg;
 }

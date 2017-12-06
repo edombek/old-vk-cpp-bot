@@ -84,10 +84,12 @@ void module::money::read()
 		moneys = json::parse(fs::readData(moneys_path));
 	}
 }
+
 void module::money::save()
 {
 	fs::writeData(moneys_path, moneys.dump(4));
 }
+
 long long int module::money::get(string id)
 {
 	if(moneys[id].is_null())
@@ -97,10 +99,25 @@ long long int module::money::get(string id)
 	}
 	return moneys[id];
 }
+
 void module::money::add(string id, long long int money)
 {
 	moneys[id] = module::money::get(id) + money;
 	module::money::save();
+}
+
+bool pred(const pair<string, long long int> &a, const pair<string, long long int> &b)
+{
+	return a.second > b.second;
+}
+
+vector<pair<string, long long int>> module::money::top()
+{
+	map<string, long long int> m;
+	m = moneys.get<map<string, long long int>>();
+	vector<pair<string, long long int>> out(m.begin(), m.end());
+    std::sort(out.begin(), out.end(), pred);
+	return out;
 }
 
 // admin system

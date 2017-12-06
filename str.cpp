@@ -46,6 +46,7 @@ std::string to_string(std::wstring const& s) {
 string str::summ(args words, int s)
 {
 	string r = "";
+	if(s+1>words.size()) return r;
 	for(unsigned int i = s; i < words.size(); i++)
 	{
 		r += words[i];

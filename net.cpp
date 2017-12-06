@@ -33,7 +33,7 @@ string net::send(string url, table param)
 }
 
 string buffer;
-int writer(char *data, size_t size, size_t nmemb, string *buffer)
+size_t writer(char *data, size_t size, size_t nmemb, string *buffer)
 {
 	int result = 0;
 	if (buffer != NULL)
@@ -63,10 +63,16 @@ string net::send(string url, string params)
 		result = curl_easy_perform(curl);
 	}
 	curl_easy_cleanup(curl);
-	cout << url << "-" << params << "-" << buffer << endl;
+	//cout << endl << url << "-" << params << endl << buffer << endl;
 	if (result == CURLE_OK)
 		return buffer;
 	return "";
+}
+
+size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)
+{
+	size_t written = fwrite(ptr, size, nmemb, (FILE *)stream);
+	return written;
 }
 
 string net::upload(string url, string filename, string params)
@@ -98,9 +104,33 @@ string net::upload(string url, string filename, string params)
 		result = curl_easy_perform(curl);
 	}
 	curl_easy_cleanup(curl);
-	cout << url << "-" << params << "-" << buffer << endl;
+	//cout << endl << url << "-" << params << endl << buffer << endl;
 	if (result == CURLE_OK)
 		return buffer;
 	return "";
 }
-	
+
+void net::download(string url, string filename, string params)
+{
+	CURL *curl;
+	FILE *file = NULL;
+    curl = curl_easy_init();
+	if (curl)
+	{
+		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+		curl_easy_setopt(curl, CURLOPT_USERAGENT, net_agent);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+		if (params != "") {
+			curl_easy_setopt(curl, CURLOPT_POST, 1);
+			curl_easy_setopt(curl, CURLOPT_POSTFIELDS, params.c_str());
+		}
+		file = fopen(filename.c_str(), "wb");
+		if(file){
+			curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
+			curl_easy_perform(curl);
+			fclose(file);
+		}
+	}
+	curl_easy_cleanup(curl);
+	return;
+}
