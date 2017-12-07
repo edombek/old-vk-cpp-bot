@@ -3,7 +3,7 @@ namespace str
 {
 	long long int fromString(const std::string& s);
 	args words(string str);
-	string summ(args words, int s);
+	string summ(args words, unsigned int s);
 	bool at(string str1, string str2);
 	string low(string str);
 	string replase(string str, string findstr, string replasestr);

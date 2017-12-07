@@ -61,8 +61,9 @@ table message::postTR(table rmsg)
 	rmsg["message"] += other::getRealTime();
 	rmsg["message"] += "Обрабатывалось: ";
 	stop = std::chrono::system_clock::now();
-	rmsg["message"] += to_string(std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count());
-	rmsg["message"] += "мс";
+	unsigned int t = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
+	rmsg["message"] += to_string((int)((float)(t-(t%60000))/60000))+":"+to_string((int)((float)(t-(t%1000))/1000))+":"+to_string((int)(t%1000));
+	rmsg["message"] += "(м:с:мс)";
 	return rmsg;
 }
 

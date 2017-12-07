@@ -40,10 +40,10 @@ nlohmann::json vk::send(string method, table params, bool sendtoken)
 	}
 	params["v"] = vk_version;
 	nlohmann::json request = nlohmann::json::parse(net::send("https://api.vk.com/method/" + method, params));
-	if(!request["error"].is_null()) cout << "VK ERROR:" << endl << request.dump(4) << endl;
+	if(!request["error"].is_null()) cout << "VK ERROR:" << endl << request/*.dump(4)*/ << endl;
 	while(!request["error"].is_null() && request["error"]["error_code"]==14)
 	{
-		other::sleep(60000);
+		other::sleep(300000);
 		request = nlohmann::json::parse(net::send("https://api.vk.com/method/" + method, params));
 	}
 	other::sleep(200);

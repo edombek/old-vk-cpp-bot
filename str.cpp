@@ -43,7 +43,7 @@ std::string to_string(std::wstring const& s) {
 	return data;
 }
 
-string str::summ(args words, int s)
+string str::summ(args words, unsigned int s)
 {
 	string r = "";
 	if(s+1>words.size()) return r;

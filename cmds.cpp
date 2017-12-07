@@ -67,7 +67,7 @@ table cmds::money::top(message::msg msg, table rmsg)
 		top.push_back("<br>"+to_string(top.size()+1)+" - [id"+person.first+"|"+module::name::get(person.first)+"] - "+to_string(module::money::get(person.first))+"$");
 	}
 	rmsg["message"] += "топ 25 богачей:<br>";
-	for(unsigned int i = 0; i<25&i<top.size();i++)
+	for(unsigned int i = 0; (i<25)&(i<top.size());i++)
 		rmsg["message"] += top[i];
 	return rmsg;
 }
@@ -283,7 +283,7 @@ table cmds::con(message::msg msg, table rmsg)
 	cmd = str::convertHtml(cmd);
 	fs::writeData("con.sh", cmd);
 	system("chmod +x con.sh");
-	system("./con.sh > con 2>&1");
+	system("bash ./con.sh > con 2>&1");
 	cmd = fs::readData("con");
 	string temp = "";
 	args out;
