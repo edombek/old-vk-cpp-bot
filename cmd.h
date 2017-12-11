@@ -1,5 +1,16 @@
 #pragma once
 
+#define MAX(x,y) ((x) > (y) ? (x) : (y))
+#define MIN(x,y) ((x) < (y) ? (x) : (y))
+
+#define MAX4(x,y,z,w) ((MAX((x),(y))) > (MAX((z),(w))) ? (MAX((x),(y))) : (MAX((z),(w))))
+#define MIN4(x,y,z,w) ((MIN((x),(y))) < (MIN((z),(w))) ? (MIN((x),(y))) : (MIN((z),(w))))
+
+#define MAXX(x) MAX4(x[0],x[2],x[4],x[6])
+#define MINX(x) MIN4(x[0],x[2],x[4],x[6])
+#define MAXY(x) MAX4(x[1],x[3],x[5],x[7])
+#define MINY(x) MIN4(x[1],x[3],x[5],x[7])
+
 namespace cmd
 {
 	typedef table(*msg_func)(message::msg, table); // rmsg func(msg, rmsg)

@@ -429,21 +429,21 @@ table cmds::citata(message::msg msg, table rmsg)
 	unsigned int y=0;
 	for(unsigned i=0; i < out.size();i++)
 	{
+		int brect[8];
 		params["user_ids"]=to_string((int)out[i]["user_id"]);
 		json t = vk::send("users.get", params)["response"][0];
 		out[i]["photo"] = t["photo_100"];
 		out[i]["name"] = t["first_name"].get<string>() + " " + t["last_name"].get<string>();
-		args w;
-		w = str::words(out[i]["msg"].get<string>(), '\n');
-		out[i]["h"]=w.size()*TXT_SIZE*1.45+100+TXT_SIZE*0.5;
-		y += out[i]["h"].get<int>();
-		if(100*(out[i]["lvl"].get<int>()+1)+out[i]["name"].get<string>().size()*TITLE_SIZE*0.7>x)
-				x = 100*(out[i]["lvl"].get<int>()+1)+out[i]["name"].get<string>().size()*TITLE_SIZE*0.7;
-		for(unsigned int i1 = 0; i1<w.size();i1++)
-		{
-			if(100*out[i]["lvl"].get<int>()+w[i1].size()*TXT_SIZE*0.7>x)
-				x = 100*out[i]["lvl"].get<int>()+w[i1].size()*TXT_SIZE*0.7;
-		}
+		gdImageStringFT(NULL, brect, 0x999999, "./font.ttf", TXT_SIZE, 0, 0, TXT_SIZE, (char*)out[i]["msg"].get<string>().c_str());
+		out[i]["y"]=MAXY(brect)+100+TXT_SIZE;
+		out[i]["x"]=MAXX(brect)+out[i]["lvl"].get<int>()*100+TXT_SIZE;
+		y += out[i]["y"].get<int>();
+		gdImageStringFT(NULL, brect, 0x999999, "./font.ttf", TITLE_SIZE, 0, 0, TITLE_SIZE, (char*)out[i]["name"].get<string>().c_str());
+		out[i]["tx"]=MAXX(brect)+100+TITLE_SIZE;
+		if(out[i]["x"].get<unsigned int>()>x)
+			x=out[i]["x"].get<int>();
+		if(out[i]["tx"].get<unsigned int>()>x)
+			x=out[i]["tx"].get<int>();
 	}
 	if((float)x/y>40)y=x*40;
 	gdImagePtr outIm = gdImageCreateTrueColor(x, y);
@@ -452,14 +452,14 @@ table cmds::citata(message::msg msg, table rmsg)
 	{
 		args w = str::words(out[i]["photo"].get<string>(), '.');
 		string n = "avatar."+w[w.size()-1];
-		gdImageFilledRectangle(outIm, out[i]["lvl"].get<int>()*100, y, 100*(out[i]["lvl"].get<int>()+1)+out[i]["name"].get<string>().size()*TITLE_SIZE*0.55, y+100, gdImageColorClosest(outIm, 50, 50, 50));
+		gdImageFilledRectangle(outIm, out[i]["lvl"].get<int>()*100, y, out[i]["lvl"].get<int>()*100 + out[i]["tx"].get<int>(), y+100, gdImageColorClosest(outIm, 50, 50, 50));
 		net::download(out[i]["photo"], n);
 		gdImagePtr im = gdImageCreateFromFile(n.c_str());
 		gdImageCopy(outIm, im, out[i]["lvl"].get<int>()*100, y, 0, 0, 100, 100);
-		gdImageStringTTF(outIm, NULL, gdImageColorClosest(outIm, 200, 200, 200), "./font.ttf", TITLE_SIZE, 0, (out[i]["lvl"].get<int>()+1)*100 + TITLE_SIZE*0.5, y+TITLE_SIZE*0.5+50, &out[i]["name"].get<string>()[0]);
-		gdImageStringTTF(outIm, NULL, gdImageColorClosest(outIm, 255, 255, 255), "./font.ttf", TXT_SIZE, 0, TXT_SIZE*0.25+out[i]["lvl"].get<int>()*100 + TXT_SIZE*0.5, y+100+TXT_SIZE*1.5, &out[i]["msg"].get<string>()[0]);
+		gdImageStringTTF(outIm, NULL, gdImageColorClosest(outIm, 200, 200, 200), "./font.ttf", TITLE_SIZE, 0, out[i]["lvl"].get<int>()*100 + 100 + TITLE_SIZE*0.5, y+TITLE_SIZE*0.5+50, (char*)out[i]["name"].get<string>().c_str());
+		gdImageStringTTF(outIm, NULL, gdImageColorClosest(outIm, 255, 255, 255), "./font.ttf", TXT_SIZE, 0, TXT_SIZE*0.5+out[i]["lvl"].get<int>()*100 + TXT_SIZE*0.5, y+100+TXT_SIZE*1.5, (char*)out[i]["msg"].get<string>().c_str());
 		gdImageDestroy(im);
-		y+=out[i]["h"].get<int>();
+		y+=out[i]["y"].get<int>();
 	}
 	FILE *in;
 	in = fopen("out.png", "wb");

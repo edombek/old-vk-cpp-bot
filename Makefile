@@ -1,5 +1,5 @@
-CC=gcc -g
-CFLAGS=-std=c++11 -c -Wall
+CC=gcc 
+CFLAGS=-std=c++11 -c -W
 LDFLAGS=-lstdc++ -L. -lcurl -lgd -Wl,-rpath,.
 INCLUDES= 
 SOURCES=	\
