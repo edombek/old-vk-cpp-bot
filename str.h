@@ -2,7 +2,7 @@
 namespace str
 {
 	long long int fromString(const std::string& s);
-	args words(string str);
+	args words(const std::string &s, char delim = ' ');
 	string summ(args words, unsigned int s);
 	bool at(string str1, string str2);
 	string low(string str);

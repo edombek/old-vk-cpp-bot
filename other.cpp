@@ -50,3 +50,17 @@ json other::jsonDifferenceArr(json j1, json j2)
 	}
 	return out;
 }
+
+void other::fwds(json *in, json *out, unsigned int lvl)
+{
+	for(auto i: *in)
+	{
+		json t;
+		t["msg"]=i["body"];
+		t["user_id"]=i["user_id"];
+		t["lvl"]=lvl;
+		out->push_back(t);
+		if(i["fwd_messages"].is_null())continue;
+		other::fwds(&i["fwd_messages"], out, lvl+1);
+	}
+}

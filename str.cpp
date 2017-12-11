@@ -18,16 +18,22 @@ long long int str::fromString(const std::string& s)
   return res;
 }
 
-args str::words(string str)
+args &split(const std::string &s, char delim, std::vector<std::string> &elems)
 {
-	args w;
-	stringstream ss(str);
-	string word;
-    while(ss>>word)
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim))
     {
-    	w.push_back(word);
+        elems.push_back(item);
     }
-	return w;
+    return elems;
+}
+
+args str::words(const std::string &s, char delim)
+{
+    std::vector<std::string> elems;
+    split(s, delim, elems);
+    return elems;
 }
 
 auto converter = new std::wstring_convert<std::codecvt_utf8<wchar_t> >();

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <gd.h>
 
 cmd::cmd_table cmds_money;
 void cmds::init()
@@ -398,5 +399,99 @@ table cmds::execute(message::msg msg, table rmsg)
 	};
 	json res = vk::send("execute", params);
 	rmsg["message"]+=res.dump(4);
+	return rmsg;
+}
+
+
+#define TXT_SIZE 50
+#define TITLE_SIZE 30
+table cmds::citata(message::msg msg, table rmsg)
+{
+	table params =
+	{
+		{"message_ids", to_string((int)msg.msg[1])}
+	};
+	json res = vk::send("messages.getById", params)["response"]["items"];
+	if(res[0]["fwd_messages"].is_null())
+	{
+		rmsg["message"]+="...";
+		return rmsg;
+	}
+	json out;
+	other::fwds(&res[0]["fwd_messages"], &out);
+	params =
+	{
+		{"fields", "photo_100"}
+	};
+	
+	unsigned int x=0;
+	unsigned int y=0;
+	for(unsigned i=0; i < out.size();i++)
+	{
+		params["user_ids"]=to_string((int)out[i]["user_id"]);
+		json t = vk::send("users.get", params)["response"][0];
+		out[i]["photo"] = t["photo_100"];
+		out[i]["name"] = t["first_name"].get<string>() + " " + t["last_name"].get<string>();
+		args w;
+		w = str::words(out[i]["msg"].get<string>(), '\n');
+		out[i]["h"]=w.size()*TXT_SIZE*1.45+100+TXT_SIZE*0.5;
+		y += out[i]["h"].get<int>();
+		if(100*(out[i]["lvl"].get<int>()+1)+out[i]["name"].get<string>().size()*TITLE_SIZE*0.55>x)
+				x = 100*(out[i]["lvl"].get<int>()+1)+out[i]["name"].get<string>().size()*TITLE_SIZE*0.55;
+		for(unsigned int i1 = 0; i1<w.size();i1++)
+		{
+			if(100*out[i]["lvl"].get<int>()+w[i1].size()*TXT_SIZE*0.55>x)
+				x = 100*out[i]["lvl"].get<int>()+w[i1].size()*TXT_SIZE*0.55;
+		}
+	}
+	
+	gdImagePtr outIm = gdImageCreateTrueColor(x, y);
+	gdImageFilledRectangle(outIm, 0, 0,  x, y, gdImageColorClosest(outIm, 255, 255, 255));
+	y=0;
+	for(unsigned int i=0;i<out.size();i++)
+	{
+		args w = str::words(out[i]["photo"].get<string>(), '.');
+		string n = "avatar."+w[w.size()-1];
+		gdImageFilledRectangle(outIm, out[i]["lvl"].get<int>()*100, y, 100*(out[i]["lvl"].get<int>()+1)+out[i]["name"].get<string>().size()*TITLE_SIZE*0.55, y+100, gdImageColorClosest(outIm, 200, 200, 200));
+		net::download(out[i]["photo"], n);
+		gdImagePtr im = gdImageCreateFromFile(n.c_str());
+		gdImageCopy(outIm, im, out[i]["lvl"].get<int>()*100, y, 0, 0, 100, 100);
+		gdImageStringTTF(outIm, NULL, 0x000000, "./font.ttf", TITLE_SIZE, 0, (out[i]["lvl"].get<int>()+1)*100 + TITLE_SIZE*0.5, y+TITLE_SIZE*0.5+50, &out[i]["name"].get<string>()[0]);
+		gdImageStringTTF(outIm, NULL, 0x000000, "./font.ttf", TXT_SIZE, 0, TXT_SIZE*0.25+out[i]["lvl"].get<int>()*100 + TXT_SIZE*0.5, y+100+TXT_SIZE*1.5, &out[i]["msg"].get<string>()[0]);
+		gdImageDestroy(im);
+		y+=out[i]["h"].get<int>();
+	}
+	FILE *in;
+	in = fopen("out.png", "wb");
+	gdImagePng(outIm, in);
+	fclose(in);
+	gdImageDestroy(outIm);
+	
+	params =
+	{
+		{"peer_id", to_string((int)msg.msg[3])}
+	};
+	res = vk::send("photos.getMessagesUploadServer", params)["response"];
+	string tmp = net::upload(res["upload_url"], "out.png");
+	if(tmp == "" || str::at(tmp, "504 Gateway Time-out"))
+	{
+		rmsg["message"]+="...";
+		return rmsg;
+	}
+	res = json::parse(tmp);
+	params = {};
+	params["server"] = to_string(res["server"].get<int>());
+	params["photo"] = res["photo"];
+	params["hash"] = res["hash"];
+	res = vk::send("photos.saveMessagesPhoto", params)/*["response"]*/;
+	if(res["response"].is_null())
+	{
+		rmsg["message"]+="...";
+		return rmsg;
+	}
+	rmsg["attachment"] = "photo";
+	rmsg["attachment"] += to_string((int)res["response"][0]["owner_id"]);
+	rmsg["attachment"] += "_";
+	rmsg["attachment"] += to_string((int)res["response"][0]["id"]);
 	return rmsg;
 }

@@ -63,7 +63,7 @@ string net::send(string url, string params)
 		result = curl_easy_perform(curl);
 	}
 	curl_easy_cleanup(curl);
-	//cout << endl << url << "-" << params << endl << buffer << endl;
+	//cout << endl << other::getRealTime() << ": " << url << "-" << params << endl << "	" << buffer << endl;
 	if (result == CURLE_OK)
 		return buffer;
 	return "";
@@ -104,7 +104,7 @@ string net::upload(string url, string filename, string params)
 		result = curl_easy_perform(curl);
 	}
 	curl_easy_cleanup(curl);
-	//cout << endl << url << "-" << params << endl << buffer << endl;
+	cout << endl << other::getRealTime() << ": " << url << "-" << params << endl << "	" << buffer << endl;
 	if (result == CURLE_OK)
 		return buffer;
 	return "";
