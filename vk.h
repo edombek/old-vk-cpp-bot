@@ -7,4 +7,5 @@ namespace vk
 	void setToken(string token);
 	void setId(int id);
 	int getId();
+	string upload(string path, string peer_id, string type);
 }
