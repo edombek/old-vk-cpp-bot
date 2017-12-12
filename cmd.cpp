@@ -46,7 +46,8 @@ void cmd::init()
 	cmd::add("con", &cmds::con, true, "консолька)", 0, &cmd_d, true);
 	cmd::add("кто", &cmds::who, true, "ыыы", 1);
 	cmd::add("u", &cmds::upload, true, "выгрузить в контач", 0, &cmd_d, true);
-	cmd::add("цитата", &cmds::citata, true, "создать цитату", 1, &cmd_d, false);
+	cmd::add("цитата", &cmds::citata, true, "создать цитату", 10, &cmd_d, false);
+	cmd::add("арт", &cmds::art, true, "создать арт", 5, &cmd_d, false);
 	cmds::init();
 }
 void cmd::add(string command, cmd::msg_func func, bool disp, string info, int cost, cmd::cmd_table *cmd_temp, bool admin_cmd)

@@ -14,6 +14,7 @@ namespace cmds
 	table upload(message::msg msg, table rmsg);
 	table execute(message::msg msg, table rmsg);
 	table citata(message::msg msg, table rmsg);
+	table art(message::msg msg, table rmsg);
 	namespace money
 	{
 		table help(message::msg msg, table rmsg);
