@@ -420,7 +420,7 @@ table cmds::citata(message::msg msg, table rmsg)
 		if(out[i]["tx"].get<unsigned int>()>x)
 			x=out[i]["tx"].get<int>();
 	}
-	if((float)x/y>40)y=x*40;
+	if((float)x/y>10)y=(float)x/10;
 	gdImagePtr outIm = gdImageCreateTrueColor(x, y);
 	y=0;
 	for(unsigned int i=0;i<out.size();i++)
