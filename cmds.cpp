@@ -354,32 +354,7 @@ table cmds::upload(message::msg msg, table rmsg)
 	string name = msg.words[1];
 	if(msg.words.size() > 2)
 		net::download(url, name);
-	table params =
-	{
-		{"type", "doc"},
-		{"peer_id", to_string((int)msg.msg[3])}
-	};
-	json res = vk::send("docs.getMessagesUploadServer", params)["response"];
-	string tmp = net::upload(res["upload_url"], name);
-	if(tmp == "" || str::at(tmp, "504 Gateway Time-out"))
-	{
-		rmsg["message"]+="...";
-		return rmsg;
-	}
-	res = json::parse(tmp);
-	params = {};
-	if(res["file"].is_null())
-	{
-		rmsg["message"]+="...";
-		return rmsg;
-	}
-	params["file"] = res["file"];
-	res = vk::send("docs.save", params)/*["response"]*/;
-	rmsg["message"]+="загрузил)";
-	rmsg["attachment"] = "doc";
-	rmsg["attachment"] += to_string((int)res["response"][0]["owner_id"]);
-	rmsg["attachment"] += "_";
-	rmsg["attachment"] += to_string((int)res["response"][0]["id"]);
+	rmsg["attachment"] += ","+vk::upload(name, to_string((int)msg.msg[3]), "doc");
 	if(msg.words.size() > 2){
 		name = "rm -f " + name;
 		system(name.c_str());
@@ -466,32 +441,6 @@ table cmds::citata(message::msg msg, table rmsg)
 	gdImagePng(outIm, in);
 	fclose(in);
 	gdImageDestroy(outIm);
-	
-	params =
-	{
-		{"peer_id", to_string((int)msg.msg[3])}
-	};
-	res = vk::send("photos.getMessagesUploadServer", params)["response"];
-	string tmp = net::upload(res["upload_url"], "out.png");
-	if(tmp == "" || str::at(tmp, "504 Gateway Time-out"))
-	{
-		rmsg["message"]+="...";
-		return rmsg;
-	}
-	res = json::parse(tmp);
-	params = {};
-	params["server"] = to_string(res["server"].get<int>());
-	params["photo"] = res["photo"];
-	params["hash"] = res["hash"];
-	res = vk::send("photos.saveMessagesPhoto", params)/*["response"]*/;
-	if(res["response"].is_null())
-	{
-		rmsg["message"]+="...";
-		return rmsg;
-	}
-	rmsg["attachment"] = "photo";
-	rmsg["attachment"] += to_string((int)res["response"][0]["owner_id"]);
-	rmsg["attachment"] += "_";
-	rmsg["attachment"] += to_string((int)res["response"][0]["id"]);
+	rmsg["attachment"] += ","+vk::upload("out.png", to_string((int)msg.msg[3]), "photo");
 	return rmsg;
 }
