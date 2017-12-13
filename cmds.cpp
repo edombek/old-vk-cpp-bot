@@ -489,7 +489,7 @@ table cmds::art(message::msg msg, table rmsg)
 		if(msg.words.size()>1)
 			s = str::fromString(msg.words[1]);
 		else
-			s = 1+rand()%4;
+			s = 1+rand()%5;
 		switch(s)
 		{
 		case 1:
@@ -505,9 +505,21 @@ table cmds::art(message::msg msg, table rmsg)
 			rmsg["message"]+="gdImageNegate";
 			break;
 		case 4:
-			gdImageEmboss(im);
-			im=gdImageCopyGaussianBlurred(im, im->sx / 100, -1);
+			int size;
+			if(msg.words.size()>2)
+				size = str::fromString(msg.words[2]);
+			else
+				size = 1+rand()%20;
+			gdImagePixelate(im, size, GD_PIXELATE_UPPERLEFT);
 			rmsg["message"]+="heh";
+			break;
+		case 5:
+			gdScatter s;
+			s.sub  = 1;
+			s.plus = 6;
+			s.seed = 0;
+			s.num_colors = 0;
+			gdImageScatterEx(im, &s);
 			break;
 		default:
 			rmsg["message"]+="ниту такого";
