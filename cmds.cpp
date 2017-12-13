@@ -415,10 +415,10 @@ table cmds::citata(message::msg msg, table rmsg)
 		y += out[i]["y"].get<int>();
 		gdImageStringFT(NULL, brect, 0x999999, "./font.ttf", TITLE_SIZE, 0, 0, TITLE_SIZE, (char*)out[i]["name"].get<string>().c_str());
 		out[i]["tx"]=MAXX(brect)+100+TITLE_SIZE;
-		if(out[i]["x"].get<unsigned int>()>x)
-			x=out[i]["x"].get<int>();
-		if(out[i]["tx"].get<unsigned int>()>x)
-			x=out[i]["tx"].get<int>();
+		if(out[i]["x"].get<unsigned int>()+TXT_SIZE>x)
+			x=out[i]["x"].get<int>()+TXT_SIZE;
+		if(out[i]["tx"].get<unsigned int>()+TITLE_SIZE>x)
+			x=out[i]["tx"].get<int>()+TITLE_SIZE;
 	}
 	if((float)x/y>10)y=(float)x/10;
 	gdImagePtr outIm = gdImageCreateTrueColor(x, y);
@@ -485,7 +485,34 @@ table cmds::art(message::msg msg, table rmsg)
 		string name = "in."+w[w.size()-1];
 		net::download(url, name);
 		gdImagePtr im = gdImageCreateFromFile(name.c_str());
-		gdImageMeanRemoval(im);
+		int s;
+		if(msg.words.size()>1)
+			s = str::fromString(msg.words[1]);
+		else
+			s = 1+rand()%4;
+		switch(s)
+		{
+		case 1:
+			gdImageMeanRemoval(im);
+			rmsg["message"]+="gdImageMeanRemoval";
+			break;
+		case 2:
+			gdImageEmboss(im);
+			rmsg["message"]+="gdImageEmboss";
+			break;
+		case 3:
+			gdImageNegate(im);
+			rmsg["message"]+="gdImageNegate";
+			break;
+		case 4:
+			gdImageEmboss(im);
+			im=gdImageCopyGaussianBlurred(im, im->sx / 100, -1);
+			rmsg["message"]+="heh";
+			break;
+		default:
+			rmsg["message"]+="ниту такого";
+			break;
+		}
 		FILE *out = fopen("out.png", "wb");
 		gdImagePng(im, out);
 		fclose(out);
