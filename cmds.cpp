@@ -447,6 +447,11 @@ table cmds::citata(message::msg msg, table rmsg)
 
 table cmds::art(message::msg msg, table rmsg)
 {
+	if(msg.words.size() < 2)
+	{
+		rmsg["message"]+="неуказаны нужные фильтры(1-5 через пробел)";
+		return rmsg;
+	}
 	table params =
 	{
 		{"message_ids", to_string((int)msg.msg[1])}
@@ -485,47 +490,38 @@ table cmds::art(message::msg msg, table rmsg)
 		string name = "in."+w[w.size()-1];
 		net::download(url, name);
 		gdImagePtr im = gdImageCreateFromFile(name.c_str());
-		int s;
-		if(msg.words.size()>1)
-			s = str::fromString(msg.words[1]);
-		else
-			s = 1+rand()%5;
-		int size;
+		int s, size;
+		for(unsigned int f=1;f<msg.words.size();f++){
+			s = str::fromString(msg.words[f]);
 		switch(s)
 		{
 		case 1:
 			gdImageMeanRemoval(im);
-			rmsg["message"]+="gdImageMeanRemoval";
+			rmsg["message"]+="<br>gdImageMeanRemoval";
 			break;
 		case 2:
 			gdImageEmboss(im);
-			rmsg["message"]+="gdImageEmboss";
+			rmsg["message"]+="<br>gdImageEmboss";
 			break;
 		case 3:
 			gdImageNegate(im);
-			rmsg["message"]+="gdImageNegate";
+			rmsg["message"]+="<br>gdImageNegate";
 			break;
 		case 4:
-			if(msg.words.size()>2)
-				size = str::fromString(msg.words[2]);
-			else
-				size = 1+rand()%20;
+			size = 1+rand()%20;
 			gdImagePixelate(im, size, GD_PIXELATE_UPPERLEFT);
-			rmsg["message"]+="gdImagePixelate";
+			rmsg["message"]+="<br>gdImagePixelate";
 			break;
 		case 5:
-			if(msg.words.size()>2)
-				size = str::fromString(msg.words[2]);
-			else
-				size = 1+rand()%10;
+			size = 1+rand()%5;
 			for(int t=0; t<size;t++)
 				gdImageScatter(im, 0, 6);
-			rmsg["message"]+="gdImageScatter";
+			rmsg["message"]+="<br>gdImageScatter";
 			break;
 		default:
-			rmsg["message"]+="ниту такого";
+			rmsg["message"]+="<br>ниту такого";
 			break;
-		}
+		}}
 		FILE *out = fopen("out.png", "wb");
 		gdImagePng(im, out);
 		fclose(out);
