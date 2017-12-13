@@ -490,6 +490,7 @@ table cmds::art(message::msg msg, table rmsg)
 			s = str::fromString(msg.words[1]);
 		else
 			s = 1+rand()%5;
+		int size;
 		switch(s)
 		{
 		case 1:
@@ -505,7 +506,6 @@ table cmds::art(message::msg msg, table rmsg)
 			rmsg["message"]+="gdImageNegate";
 			break;
 		case 4:
-			int size;
 			if(msg.words.size()>2)
 				size = str::fromString(msg.words[2]);
 			else
@@ -514,12 +514,12 @@ table cmds::art(message::msg msg, table rmsg)
 			rmsg["message"]+="gdImagePixelate";
 			break;
 		case 5:
-			gdScatter s;
-			s.sub  = 0;
-			s.plus = 6;
-			s.seed = 0;
-			s.num_colors = 0;
-			gdImageScatterEx(im, &s);
+			if(msg.words.size()>2)
+				size = str::fromString(msg.words[2]);
+			else
+				size = 1+rand()%10;
+			for(int t=0; t<size;t++)
+				gdImageScatter(im, 0, 6);
 			rmsg["message"]+="gdImageScatter";
 			break;
 		default:
