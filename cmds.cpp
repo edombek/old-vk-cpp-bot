@@ -511,15 +511,16 @@ table cmds::art(message::msg msg, table rmsg)
 			else
 				size = 1+rand()%20;
 			gdImagePixelate(im, size, GD_PIXELATE_UPPERLEFT);
-			rmsg["message"]+="heh";
+			rmsg["message"]+="gdImagePixelate";
 			break;
 		case 5:
 			gdScatter s;
-			s.sub  = 1;
+			s.sub  = 0;
 			s.plus = 6;
 			s.seed = 0;
 			s.num_colors = 0;
 			gdImageScatterEx(im, &s);
+			rmsg["message"]+="gdImageScatter";
 			break;
 		default:
 			rmsg["message"]+="ниту такого";
