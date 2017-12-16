@@ -487,41 +487,42 @@ table cmds::art(message::msg msg, table rmsg)
 	{
 		string url = res[i]["sizes"][res[i]["sizes"].size()-1]["src"];
 		args w = str::words(url, '.');
-		string name = "in."+w[w.size()-1];
+		string name = "f/in-"+other::getRealTime()+"."+w[w.size()-1];
 		net::download(url, name);
 		gdImagePtr im = gdImageCreateFromFile(name.c_str());
 		int s, size;
 		for(unsigned int f=1;f<msg.words.size();f++){
 			s = str::fromString(msg.words[f]);
-		switch(s)
-		{
-		case 1:
-			gdImageMeanRemoval(im);
-			rmsg["message"]+="<br>gdImageMeanRemoval";
-			break;
-		case 2:
-			gdImageEmboss(im);
-			rmsg["message"]+="<br>gdImageEmboss";
-			break;
-		case 3:
-			gdImageNegate(im);
-			rmsg["message"]+="<br>gdImageNegate";
-			break;
-		case 4:
-			size = 1+rand()%20;
-			gdImagePixelate(im, size, GD_PIXELATE_UPPERLEFT);
-			rmsg["message"]+="<br>gdImagePixelate";
-			break;
-		case 5:
-			size = 1+rand()%5;
-			for(int t=0; t<size;t++)
-				gdImageScatter(im, 0, 6);
-			rmsg["message"]+="<br>gdImageScatter";
-			break;
-		default:
-			rmsg["message"]+="<br>ниту такого";
-			break;
-		}}
+			switch(s)
+			{
+			case 1:
+				gdImageMeanRemoval(im);
+				rmsg["message"]+="<br>gdImageMeanRemoval";
+				break;
+			case 2:
+				gdImageEmboss(im);
+				rmsg["message"]+="<br>gdImageEmboss";
+				break;
+			case 3:
+				gdImageNegate(im);
+				rmsg["message"]+="<br>gdImageNegate";
+				break;
+			case 4:
+				size = 1+rand()%10;
+				gdImagePixelate(im, size, GD_PIXELATE_UPPERLEFT);
+				rmsg["message"]+="<br>gdImagePixelate";
+				break;
+			case 5:
+				size = 1+rand()%5;
+				for(int t=0; t<size;t++)
+					gdImageScatter(im, 0, 6);
+				rmsg["message"]+="<br>gdImageScatter";
+				break;
+			default:
+				rmsg["message"]+="<br>ниту такого";
+				break;
+			}
+		}
 		FILE *out = fopen("out.png", "wb");
 		gdImagePng(im, out);
 		fclose(out);
