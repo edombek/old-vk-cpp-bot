@@ -35,8 +35,6 @@ void cmd::init()
 	cmd::add("help", &help, false);
 	cmd::add("$", &cmds::money::main, true, "валюта");
 	cmd::add("тест", &cmds::test, true, "тест на пинг", 0); //example
-	//cmd::add("маста", &cmds::servers, true, "сервера хача3д");
-	//cmd::add("паста", &cmds::servers, false, "сервера хача3д");
 	cmd::add("ник", &cmds::nick, true, "смена ника");
 	cmd::add("видосы", &cmds::video, true, "видосы", 10);
 	cmd::add("фраза", &cmds::phrase, true,"добавить случайную фразу", 20);

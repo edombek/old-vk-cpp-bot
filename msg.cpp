@@ -28,7 +28,7 @@ void message::load(json dat)
 		}
 		rmsg["forward_messages"] = to_string((int)msg.msg[1]);
 	}
-	msg.words = str::words(str::replase(msg.msg[5], ".", "[*]"));
+	msg.words = str::words(msg.msg[5]);
 	if(!msg.words.size())return;
 	if(message::isChat(msg) && !message::toMe(msg.words[0], botname)) return;
 	if((message::toMe(msg.words[0], botname))) msg.words.erase(msg.words.begin());
@@ -50,6 +50,7 @@ bool message::isChat(message::msg msg)
 
 json message::send(table msg)
 {
+	msg["message"] = str::replase(str::replase(msg["message"], "&#", "[*]"), ".", "[*]");
 	return vk::send("messages.send", msg, true);
 }
 

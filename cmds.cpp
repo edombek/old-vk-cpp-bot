@@ -80,36 +80,6 @@ table cmds::test(message::msg msg, table rmsg) //example
 	return rmsg;
 }
 
-table cmds::servers(message::msg msg, table rmsg)
-{
-	rmsg["message"]+="Серва:<br><br>";
-	json servers = json::parse(net::send("http://194.67.198.141/api/ms_server.php"));
-	for(auto ss: servers)
-	{
-		if(!ss["info"].is_boolean())
-		{
-			rmsg["message"] += "<br>";
-			rmsg["message"] += ss["info"]["host"];
-			rmsg["message"] += " (";
-			rmsg["message"] += ss["info"]["gamedir"];
-			rmsg["message"] += ") ";
-			rmsg["message"] += to_string((int)ss["info"]["ping"]);
-			rmsg["message"] += "ms <br>";
-			rmsg["message"] += ss["info"]["map"];
-			rmsg["message"] += " ";
-			rmsg["message"] += ss["ip"];
-			rmsg["message"] += ":";
-			rmsg["message"] += to_string((int)ss["port"]);
-			rmsg["message"] += " ";
-			rmsg["message"] += ss["info"]["numcl"];
-			rmsg["message"] += "/";
-			rmsg["message"] += ss["info"]["maxcl"];
-			rmsg["message"] += "<br>#####################";
-		}
-	}
-	return rmsg;
-}
-
 table cmds::nick(message::msg msg, table rmsg)
 {
 	if(msg.words.size() < 2)
@@ -414,7 +384,7 @@ table cmds::citata(message::msg msg, table rmsg)
 		out[i]["x"]=MAXX(brect)+out[i]["lvl"].get<int>()*100+TXT_SIZE;
 		y += out[i]["y"].get<int>();
 		gdImageStringFT(NULL, brect, 0x999999, "./font.ttf", TITLE_SIZE, 0, 0, TITLE_SIZE, (char*)out[i]["name"].get<string>().c_str());
-		out[i]["tx"]=MAXX(brect)+100+TITLE_SIZE;
+		out[i]["tx"]=MAXX(brect)+100+TITLE_SIZE+out[i]["lvl"].get<int>()*100;
 		if(out[i]["x"].get<unsigned int>()+TXT_SIZE>x)
 			x=out[i]["x"].get<int>()+TXT_SIZE;
 		if(out[i]["tx"].get<unsigned int>()+TITLE_SIZE>x)
