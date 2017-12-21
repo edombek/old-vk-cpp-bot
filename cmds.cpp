@@ -13,6 +13,7 @@ void cmds::init()
 	cmd::add("баланс", &cmds::money::balanse, true, "мой баланс", 0, &cmds_money);
 	cmd::add("лотерея", &cmds::money::lotery, true, "лотерея", 0, &cmds_money);
 	cmd::add("топ", &cmds::money::top, true, "топ 10 богачей", 0, &cmds_money);
+	cmd::add("отправить", &cmds::money::send, true, "перечислить $", 0, &cmds_money);
 }
 
 table cmds::money::help(message::msg msg, table rmsg)
@@ -71,6 +72,26 @@ table cmds::money::top(message::msg msg, table rmsg)
 	rmsg["message"] += "топ 25 богачей:<br>";
 	for(unsigned int i = 0; (i<25)&(i<top.size());i++)
 		rmsg["message"] += top[i];
+	return rmsg;
+}
+
+table cmds::money::send(message::msg msg, table rmsg)
+{
+	if(4 > msg.words.size())
+	{
+		msg.words.push_back("0");
+		msg.words.push_back("0");
+	}
+	long long int id = str::fromString(msg.words[2]);
+	long long int m = str::fromString(msg.words[3]);
+	if(m < 1 || m > module::money::get(other::getId(msg)))
+	{
+		rmsg["message"] += "ошибка(<br>используйте отправить <id> <$><br>ну или у вас недостаточно $";
+		return rmsg;
+	}
+	else rmsg["message"] += "отправил";
+	module::money::add(other::getId(msg), 0-m);
+	module::money::add(to_string(id), m);
 	return rmsg;
 }
 

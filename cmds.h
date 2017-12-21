@@ -21,5 +21,6 @@ namespace cmds
 		table balanse(message::msg msg, table rmsg);
 		table lotery(message::msg msg, table rmsg);
 		table top(message::msg msg, table rmsg);
+		table send(message::msg msg, table rmsg);
 	}
 }

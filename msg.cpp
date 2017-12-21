@@ -51,7 +51,9 @@ bool message::isChat(message::msg msg)
 json message::send(table msg)
 {
 	msg["message"] = str::replase(str::replase(msg["message"], "&#", "[*]"), ".", "[*]");
-	return vk::send("messages.send", msg, true);
+	json t = vk::send("messages.send", msg, true);
+	cout << endl << other::getRealTime() << ": 	" << msg["peer_id"] << "-" << msg["message"] << endl;
+	return t;
 }
 
 table message::postTR(table rmsg)
