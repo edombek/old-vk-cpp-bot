@@ -316,11 +316,7 @@ table cmds::who(message::msg msg, table rmsg)
 	string who = str::summ(msg.words, 1);
 	if(who[who.size()-1]=='?')
 		who.resize(who.size()-1);
-	rmsg["message"]+= who + " - [id" + to_string((int)res[i]["id"]) + "|";
-	rmsg["message"]+= res[i]["first_name"].get<string>();
-	rmsg["message"]+= " ";
-	rmsg["message"]+= res[i]["last_name"].get<string>();
-	rmsg["message"]+= "]";
+	rmsg["message"]+= who + " - [id" + to_string((int)res[i]["id"]) + "|" + module::name::get(to_string((int)res[i]["id"])) + "]";
 	return rmsg;
 }
 

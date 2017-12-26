@@ -15,7 +15,9 @@ void other::startTime()
 
 string other::getTime()
 {
-	return ctime(&td);
+	string str = ctime(&td);
+	str.resize(str.size()-1);
+	return str;
 }
 
 string other::getRealTime()

@@ -61,6 +61,7 @@ void cmd::add(string command, cmd::msg_func func, bool disp, string info, int co
 }
 table cmd::start(message::msg msg, table rmsg, string command, cmd::cmd_table *cmd_temp)
 {
+	command = str::replase(str::replase(command, "#", "[*]"), ".", "[*]");
 	if(cmd_temp==NULL)cmd_temp=&cmd_d;
 	if((*cmd_temp).find(command)->first != "")
 	{

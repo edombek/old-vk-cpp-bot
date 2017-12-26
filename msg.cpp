@@ -43,7 +43,6 @@ bool message::isChat(message::msg msg)
 
 json message::send(table msg)
 {
-	//msg["message"] = str::replase(str::replase(msg["message"], "&#", "[*]"), ".", "[*]");
 	json t = vk::send("messages.send", msg, true);
 	cout << endl << other::getRealTime() << ": 	" << msg["peer_id"] << "-" << msg["message"] << endl;
 	return t;
@@ -53,9 +52,9 @@ table message::postTR(table rmsg)
 {
 	rmsg["message"] += "<br><br>Запущен: ";
 	rmsg["message"] += other::getTime();
-	rmsg["message"] += "Сейчас: ";
+	rmsg["message"] += "<br>Сейчас: ";
 	rmsg["message"] += other::getRealTime();
-	rmsg["message"] += "Обрабатывалось: ";
+	rmsg["message"] += "<br>Обрабатывалось: ";
 	stop = std::chrono::system_clock::now();
 	unsigned int t = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
 	rmsg["message"] += to_string((int)((float)(((t-t%60000)/60000)%60)))+":"+to_string((int)((float)(((t-t%1000)/1000)%60)))+":"+to_string((int)(t%1000));

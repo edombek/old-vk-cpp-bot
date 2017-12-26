@@ -57,7 +57,7 @@ string module::name::get(string id)
 }
 void module::name::set(string id, string name)
 {
-	names[id] = name;
+	names[id] = str::replase(str::replase(name, "#", "[*]"), ".", "[*]");
 	module::name::save();
 }
 string module::name::getVk(string id)
