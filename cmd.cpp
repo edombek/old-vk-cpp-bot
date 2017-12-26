@@ -5,12 +5,12 @@ cmd::cmd_table cmd_d;
 string cmd::helpList(cmd::cmd_table *cmd_temp, message::msg msg)
 {
 	string out = "";
-	out+="команды:<br>";
+	out+="команды:\n";
 	for(auto cmds: (*cmd_temp))
 	{
 		if(!cmds.second.disp&!module::admin::get(other::getId(msg)))continue;
 		if(!module::admin::get(other::getId(msg))&cmds.second.admin_cmd) continue;
-		out+="<br> - \"";
+		out+="\n - \"";
 		out+=str::low(cmds.first);
 		out+="\" - ";
 		out+=cmds.second.info;

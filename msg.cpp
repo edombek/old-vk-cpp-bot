@@ -50,11 +50,11 @@ json message::send(table msg)
 
 table message::postTR(table rmsg)
 {
-	rmsg["message"] += "<br><br>Запущен: ";
+	rmsg["message"] += "\n\nЗапущен: ";
 	rmsg["message"] += other::getTime();
-	rmsg["message"] += "<br>Сейчас: ";
+	rmsg["message"] += "\nСейчас: ";
 	rmsg["message"] += other::getRealTime();
-	rmsg["message"] += "<br>Обрабатывалось: ";
+	rmsg["message"] += "\nОбрабатывалось: ";
 	stop = std::chrono::system_clock::now();
 	unsigned int t = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
 	rmsg["message"] += to_string((int)((float)(((t-t%60000)/60000)%60)))+":"+to_string((int)((float)(((t-t%1000)/1000)%60)))+":"+to_string((int)(t%1000));

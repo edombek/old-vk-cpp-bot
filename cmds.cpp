@@ -49,7 +49,7 @@ table cmds::money::lotery(message::msg msg, table rmsg)
 	long long int m = str::fromString(msg.words[2]);
 	if(m < 1 || m > module::money::get(other::getId(msg)))
 	{
-		rmsg["message"] += "ошибка(<br>используйте лотерея <ставка><br>ну или у вас недостаточно $";
+		rmsg["message"] += "ошибка(\nиспользуйте лотерея <ставка>\nну или у вас недостаточно $";
 		return rmsg;
 	}
 	if(rand() % 100 > PERSENT)
@@ -67,9 +67,9 @@ table cmds::money::top(message::msg msg, table rmsg)
 	vector<string> top;
 	for(auto person: module::money::top())
 	{
-		top.push_back("<br>"+to_string(top.size()+1)+" - [id"+person.first+"|"+module::name::get(person.first)+"] - "+to_string(module::money::get(person.first))+"$");
+		top.push_back("\n"+to_string(top.size()+1)+" - [id"+person.first+"|"+module::name::get(person.first)+"] - "+to_string(module::money::get(person.first))+"$");
 	}
-	rmsg["message"] += "топ 25 богачей:<br>";
+	rmsg["message"] += "топ 25 богачей:\n";
 	for(unsigned int i = 0; (i<25)&(i<top.size());i++)
 		rmsg["message"] += top[i];
 	return rmsg;
@@ -86,7 +86,7 @@ table cmds::money::send(message::msg msg, table rmsg)
 	long long int m = str::fromString(msg.words[3]);
 	if(m < 1 || m > module::money::get(other::getId(msg)))
 	{
-		rmsg["message"] += "ошибка(<br>используйте отправить <id> <$><br>ну или у вас недостаточно $";
+		rmsg["message"] += "ошибка(\nиспользуйте отправить <id> <$>\nну или у вас недостаточно $";
 		return rmsg;
 	}
 	else rmsg["message"] += "отправил";
@@ -154,7 +154,7 @@ table cmds::video(message::msg msg, table rmsg)
 		rmsg["attachment"]+=videos[i];
 		rmsg["attachment"]+=",";
 	}
-	rmsg["message"]+="воть<br>всего:";
+	rmsg["message"]+="воть\nвсего:";
 	rmsg["message"]+=to_string(videos.size());
 	return rmsg;
 }
@@ -203,7 +203,7 @@ table cmds::f(message::msg msg, table rmsg)
 		rmsg["attachment"]+=videos[i];
 		rmsg["attachment"]+=",";
 	}
-	rmsg["message"]+="воть<br>всего:";
+	rmsg["message"]+="воть\nвсего:";
 	rmsg["message"]+=to_string(videos.size());
 	return rmsg;
 }
@@ -246,7 +246,7 @@ table cmds::doc(message::msg msg, table rmsg)
 		rmsg["attachment"]+=docs[i];
 		rmsg["attachment"]+=",";
 	}
-	rmsg["message"]+="воть<br>всего:";
+	rmsg["message"]+="воть\nвсего:";
 	rmsg["message"]+=to_string(docs.size());
 	return rmsg;
 }
@@ -260,7 +260,6 @@ table cmds::con(message::msg msg, table rmsg)
 		return rmsg;
 	}
 	string cmd = str::summ(msg.words, 1);
-	cmd = str::replase(cmd, "<br>", "\n");
 	cmd = str::convertHtml(cmd);
 	fs::writeData("con.sh", cmd);
 	system("chmod +x con.sh");
@@ -273,18 +272,16 @@ table cmds::con(message::msg msg, table rmsg)
 		temp.push_back(cmd[i]);
 		if(temp.size() > max_size && (cmd.size() > i +1 && cmd[i+1]!='\n'))
 		{
-			temp = str::replase(temp, "\n", "<br>");
 			out.push_back(temp);
 			temp = "";
 		}
 	}
-	temp = str::replase(temp, "\n", "<br>");
 	out.push_back(temp);
 	temp = "";
 	for(unsigned i = 0; i < out.size(); i++)
 	{
-		rmsg["message"]+= "<br><br>("+to_string(i+1)+"/"+to_string(out.size())+")<br>";
-		rmsg["message"]+= "<br><br>" + out[i];
+		rmsg["message"]+= "("+to_string(i+1)+"/"+to_string(out.size())+")\n";
+		rmsg["message"]+= "\n" + out[i];
 		if(out.size() == 1 || i == out.size()-1)break;
 		message::send(rmsg);
 		rmsg["message"]= "";
@@ -347,7 +344,6 @@ table cmds::execute(message::msg msg, table rmsg)
 		return rmsg;
 	}
 	string cmd = str::summ(msg.words, 1);
-	cmd = str::replase(cmd, "<br>", "\n");
 	cmd = str::convertHtml(cmd);
 	table params =
 	{
@@ -487,29 +483,29 @@ table cmds::art(message::msg msg, table rmsg)
 			{
 			case 1:
 				gdImageMeanRemoval(im);
-				rmsg["message"]+="<br>gdImageMeanRemoval";
+				rmsg["message"]+="\ngdImageMeanRemoval";
 				break;
 			case 2:
 				gdImageEmboss(im);
-				rmsg["message"]+="<br>gdImageEmboss";
+				rmsg["message"]+="\ngdImageEmboss";
 				break;
 			case 3:
 				gdImageNegate(im);
-				rmsg["message"]+="<br>gdImageNegate";
+				rmsg["message"]+="\ngdImageNegate";
 				break;
 			case 4:
 				size = 1+rand()%10;
 				gdImagePixelate(im, size, GD_PIXELATE_UPPERLEFT);
-				rmsg["message"]+="<br>gdImagePixelate";
+				rmsg["message"]+="\ngdImagePixelate";
 				break;
 			case 5:
 				size = 1+rand()%5;
 				for(int t=0; t<size;t++)
 					gdImageScatter(im, 0, 6);
-				rmsg["message"]+="<br>gdImageScatter";
+				rmsg["message"]+="\ngdImageScatter";
 				break;
 			default:
-				rmsg["message"]+="<br>ниту такого";
+				rmsg["message"]+="\nниту такого";
 				break;
 			}
 		}
@@ -546,10 +542,10 @@ table cmds::weather(message::msg msg, table rmsg)
 	string temp = "";
 	temp += "погода в "+weather["city"]["country"].get<string>()+"/"+weather["city"]["name"].get<string>()+":";
 	weather = weather["list"];
-	temp += "<br>время | температура | скорость ветра | влажность | осадки";
-	temp += "<br>сейчас "+to_string((int)weather[0]["main"]["temp"])+"°C | "+to_string((int)weather[0]["wind"]["speed"])+"м/с | "+to_string((int)weather[0]["main"]["humidity"])+"% | "+weather[0]["weather"][0]["description"].get<string>();
+	temp += "\nвремя | температура | скорость ветра | влажность | осадки";
+	temp += "\nсейчас "+to_string((int)weather[0]["main"]["temp"])+"°C | "+to_string((int)weather[0]["wind"]["speed"])+"м/с | "+to_string((int)weather[0]["main"]["humidity"])+"% | "+weather[0]["weather"][0]["description"].get<string>();
 	for(unsigned int i = 1; i<weather.size(); i++)
-		temp += "<br>"+other::getTime(weather[i]["dt"])+" | "+to_string((int)weather[i]["main"]["temp"])+"°C | "+to_string((int)weather[i]["wind"]["speed"])+"м/с | "+to_string((int)weather[i]["main"]["humidity"])+"% | "+weather[i]["weather"][0]["description"].get<string>();
+		temp += "\n"+other::getTime(weather[i]["dt"])+" | "+to_string((int)weather[i]["main"]["temp"])+"°C | "+to_string((int)weather[i]["wind"]["speed"])+"м/с | "+to_string((int)weather[i]["main"]["humidity"])+"% | "+weather[i]["weather"][0]["description"].get<string>();
 	rmsg["message"]+=temp;
 	return rmsg;
 }
