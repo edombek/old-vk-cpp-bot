@@ -8,7 +8,6 @@ void module::start()
 	module::name::read();
 	module::money::read();
 	module::admin::read();
-	module::phrase::read();
 }
 
 long long int oldbalance;
@@ -150,31 +149,4 @@ void module::admin::set(string id, bool admin)
 {
 	admins[id] = admin;
 	module::admin::save();
-}
-
-// phrase system
-#define phrases_path "phrases.json"
-json phrases;
-void module::phrase::read()
-{
-	if(fs::exists(phrases_path))
-	{
-		phrases = json::parse(fs::readData(phrases_path));
-	}
-}
-void module::phrase::save()
-{
-	fs::writeData(phrases_path, phrases.dump(4));
-}
-string module::phrase::get()
-{
-	if(phrases.size())
-		return phrases[rand()%phrases.size()];
-	else 
-		return "";
-}
-void module::phrase::add(string add)
-{
-	phrases.push_back(add);
-	module::phrase::save();
 }

@@ -21,7 +21,16 @@ string other::getTime()
 string other::getRealTime()
 {
 	time_t temp = time(NULL);
-	return ctime(&temp);
+	string str = ctime(&temp);
+	str.resize(str.size()-1);
+	return str;
+}
+
+string other::getTime(time_t temp)
+{
+	string str = ctime(&temp);
+	str.resize(str.size()-1);
+	return str;
 }
 
 string other::getId(message::msg msg)

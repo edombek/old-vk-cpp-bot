@@ -17,20 +17,13 @@ void message::load(json dat)
 	table rmsg;
 	msg.msg=dat;
 	char flags = (int)msg.msg[2];
-	if(msg.msg.is_null() || flags & out)return;
+	if(msg.msg.is_null() || (flags & out && !message::isChat(msg)))return;
 	rmsg["peer_id"] = to_string((int)msg.msg[3]);
 	if(message::isChat(msg))
-	{
-		if(rand()%10000+1<100*PERSENT)
-		{
-			rmsg["message"]=module::phrase::get();
-			message::send(rmsg);
-		}
 		rmsg["forward_messages"] = to_string((int)msg.msg[1]);
-	}
 	msg.words = str::words(msg.msg[5]);
 	if(!msg.words.size())return;
-	if(message::isChat(msg) && !message::toMe(msg.words[0], botname)) return;
+	if(/*message::isChat(msg) &&*/ !message::toMe(msg.words[0], botname)) return;
 	if((message::toMe(msg.words[0], botname))) msg.words.erase(msg.words.begin());
 	if(1 > msg.words.size())
 	{
@@ -50,7 +43,7 @@ bool message::isChat(message::msg msg)
 
 json message::send(table msg)
 {
-	msg["message"] = str::replase(str::replase(msg["message"], "&#", "[*]"), ".", "[*]");
+	//msg["message"] = str::replase(str::replase(msg["message"], "&#", "[*]"), ".", "[*]");
 	json t = vk::send("messages.send", msg, true);
 	cout << endl << other::getRealTime() << ": 	" << msg["peer_id"] << "-" << msg["message"] << endl;
 	return t;

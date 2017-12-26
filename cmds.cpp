@@ -123,7 +123,7 @@ table cmds::video(message::msg msg, table rmsg)
 	table params =
 	{
 		{"q", str::summ(msg.words, 1)},
-		{"adult", "1"},
+		{"adult", "0"},
 		{"count", "200"},
 		{"hd", "1"},
 		{"sort", "2"}
@@ -156,18 +156,6 @@ table cmds::video(message::msg msg, table rmsg)
 	}
 	rmsg["message"]+="воть<br>всего:";
 	rmsg["message"]+=to_string(videos.size());
-	return rmsg;
-}
-
-table cmds::phrase(message::msg msg, table rmsg)
-{
-	if(msg.words.size() < 2)
-	{
-		rmsg["message"]+="я чо Ванга?";
-		return rmsg;
-	}
-	module::phrase::add(str::summ(msg.words, 1));
-	rmsg["message"]+="добавил)";
 	return rmsg;
 }
 
@@ -326,6 +314,8 @@ table cmds::who(message::msg msg, table rmsg)
 	json res = vk::send("messages.getChatUsers", params)["response"];
 	unsigned int i = rand()%res.size();
 	string who = str::summ(msg.words, 1);
+	if(who[who.size()-1]=='?')
+		who.resize(who.size()-1);
 	rmsg["message"]+= who + " - [id" + to_string((int)res[i]["id"]) + "|";
 	rmsg["message"]+= res[i]["first_name"].get<string>();
 	rmsg["message"]+= " ";
@@ -360,9 +350,12 @@ table cmds::execute(message::msg msg, table rmsg)
 		rmsg["message"]+="...";
 		return rmsg;
 	}
+	string cmd = str::summ(msg.words, 1);
+	cmd = str::replase(cmd, "<br>", "\n");
+	cmd = str::convertHtml(cmd);
 	table params =
 	{
-		{"code", str::replase(str::summ(msg.words, 1), "<br>", "\n")}
+		{"code", cmd}
 	};
 	json res = vk::send("execute", params);
 	rmsg["message"]+=res.dump(4);
@@ -423,7 +416,9 @@ table cmds::citata(message::msg msg, table rmsg)
 		{
 			args w = str::words(out[i]["photo"].get<string>(), '.');
 			string n = "avatar."+w[w.size()-1];
-			gdImageFilledRectangle(outIm, out[i]["lvl"].get<int>()*100, y, out[i]["lvl"].get<int>()*100 + out[i]["tx"].get<int>(), y+100, gdImageColorClosest(outIm, 50, 50, 50));
+			/*gdImageFilledRectangle(outIm, out[i]["lvl"].get<int>()*100+150, y, out[i]["lvl"].get<int>()*100 + out[i]["tx"].get<int>()-50, y+100, gdImageColorClosest(outIm, 50, 50, 50));
+			gdImageFilledEllipse(outIm, out[i]["lvl"].get<int>()*100+150, y+50, 100, 100, gdImageColorClosest(outIm, 50, 50, 50));
+			gdImageFilledEllipse(outIm, out[i]["lvl"].get<int>()*100 + out[i]["tx"].get<int>()-50, y+50, 100, 100, gdImageColorClosest(outIm, 50, 50, 50));*/
 			net::download(out[i]["photo"], n);
 			gdImagePtr im = gdImageCreateFromFile(n.c_str());
 			gdImageCopy(outIm, im, out[i]["lvl"].get<int>()*100, y, 0, 0, 100, 100);
@@ -528,5 +523,37 @@ table cmds::art(message::msg msg, table rmsg)
 		gdImageDestroy(im);
 		rmsg["attachment"] += vk::upload("out.png", to_string((int)msg.msg[3]), "photo") + ",";
 	}
+	return rmsg;
+}
+
+table cmds::weather(message::msg msg, table rmsg)
+{
+	if(msg.words.size() < 2)
+	{
+		rmsg["message"]+="мб город введёшь?";
+		return rmsg;
+	}
+	table params =
+	{
+		{"lang", "ru"},
+		{"units", "metric"},
+		{"APPID", "ef23e5397af13d705cfb244b33d04561"},
+		{"q", str::summ(msg.words, 1)}
+	};
+	json weather = json::parse(net::send("http://api.openweathermap.org/data/2.5/forecast", params, false));
+	if(weather["list"].is_null()&&!weather["list"].size())
+	{
+		rmsg["message"]+="чтота пошло не так, возможно надо ввести город транслитом";
+		return rmsg;
+	}
+	//rmsg["message"]+=weather["list"][0].dump(4);
+	string temp = "";
+	temp += "погода в "+weather["city"]["country"].get<string>()+"/"+weather["city"]["name"].get<string>()+":";
+	weather = weather["list"];
+	temp += "<br>время | температура | скорость ветра | влажность | осадки";
+	temp += "<br>сейчас "+to_string((int)weather[0]["main"]["temp"])+"°C | "+to_string((int)weather[0]["wind"]["speed"])+"м/с | "+to_string((int)weather[0]["main"]["humidity"])+"% | "+weather[0]["weather"][0]["description"].get<string>();
+	for(unsigned int i = 1; i<weather.size(); i++)
+		temp += "<br>"+other::getTime(weather[i]["dt"])+" | "+to_string((int)weather[i]["main"]["temp"])+"°C | "+to_string((int)weather[i]["wind"]["speed"])+"м/с | "+to_string((int)weather[i]["main"]["humidity"])+"% | "+weather[i]["weather"][0]["description"].get<string>();
+	rmsg["message"]+=temp;
 	return rmsg;
 }

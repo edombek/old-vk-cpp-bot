@@ -22,14 +22,16 @@ string net::urlEncode(string str)
 	return result;
 }
 
-string net::send(string url, table param)
+string net::send(string url, table param, bool post)
 {
 	string paramline = "";
 	table *params = &param;
 	for (auto iter = params->begin(); iter != params->end(); iter++) {
 		paramline += iter->first + "=" + urlEncode(iter->second) + "&";
 	}
-	return net::send(url, paramline);
+	if(post)
+		return net::send(url, paramline);
+	return net::send(url+"?"+paramline);
 }
 
 string buffer;
@@ -63,7 +65,7 @@ string net::send(string url, string params)
 		result = curl_easy_perform(curl);
 	}
 	curl_easy_cleanup(curl);
-	//cout << endl << other::getRealTime() << ": " << url << "-" << params << endl << "	" << buffer << endl;
+	cout << endl << other::getRealTime() << ": " << url << "-" << params << endl << "	" << buffer << endl;
 	if (result == CURLE_OK)
 		return buffer;
 	return "";

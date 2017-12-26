@@ -23,4 +23,4 @@ using json = nlohmann::json;
 #include "other.h"
 #include "modules.h"
 
-#define botname {"кот", "пуся", "!", "хуй", "муся"}
+#define botname {"кот", "!"}
