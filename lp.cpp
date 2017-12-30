@@ -21,7 +21,7 @@ void lp::loop()
 		table params = {
 			{ "key", key },
 			{ "ts", ts },
-			{ "wait", "25" },//25
+			{ "wait", "90" },//25
 			{ "mode", "2" },
 			{ "version", "2" },
 			{ "act", "a_check" }

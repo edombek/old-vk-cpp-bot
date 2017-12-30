@@ -68,7 +68,7 @@ string net::send(string url, string params)
 	cout << endl << other::getRealTime() << ": " << url << "-" << params << endl << "	" << buffer << endl;
 	if (result == CURLE_OK)
 		return buffer;
-	return "";
+	return net::send(url, params);
 }
 
 size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)

@@ -170,13 +170,21 @@ table cmds::f(message::msg msg, table rmsg)
 	{
 		{"q", str::summ(msg.words, 1)},
 		{"adult", "1"},
-		{"count", "200"},
+		{"count", "100"},
+		{"offset", "0"},
 		{"hd", "1"},
 		{"sort", "2"}
 	};
 	json res1 = vk::send("video.search", params)["response"]["items"];
 	params["adult"] = "0";
-	json res2 = vk::send("video.search", params)["response"]["items"];
+	json res2;
+	for(int i = 0; i < 1000; i+=200)
+	{
+		params["offset"] = to_string(i);
+		json temp = vk::send("video.search", params)["response"]["items"];
+		for(int t; t<temp.size(); t++)
+			res2.push_back(temp[i]);
+	}
 	json res = other::jsonDifferenceArr(res1, res2);
 	args videos;
 	for(unsigned int i = 0; i < res.size(); i++)
@@ -260,6 +268,7 @@ table cmds::con(message::msg msg, table rmsg)
 		return rmsg;
 	}
 	string cmd = str::summ(msg.words, 1);
+	cmd = str::replase(cmd, "<br>", "\n");
 	cmd = str::convertHtml(cmd);
 	fs::writeData("con.sh", cmd);
 	system("chmod +x con.sh");
@@ -344,6 +353,7 @@ table cmds::execute(message::msg msg, table rmsg)
 		return rmsg;
 	}
 	string cmd = str::summ(msg.words, 1);
+	cmd = str::replase(cmd, "<br>", "\n");
 	cmd = str::convertHtml(cmd);
 	table params =
 	{
@@ -473,7 +483,7 @@ table cmds::art(message::msg msg, table rmsg)
 	{
 		string url = res[i]["sizes"][res[i]["sizes"].size()-1]["src"];
 		args w = str::words(url, '.');
-		string name = "f/in-"+other::getRealTime()+"."+w[w.size()-1];
+		string name = "in-"+other::getRealTime()+"."+w[w.size()-1];
 		net::download(url, name);
 		gdImagePtr im = gdImageCreateFromFile(name.c_str());
 		int s, size;
@@ -547,5 +557,31 @@ table cmds::weather(message::msg msg, table rmsg)
 	for(unsigned int i = 1; i<weather.size(); i++)
 		temp += "\n"+other::getTime(weather[i]["dt"])+" | "+to_string((int)weather[i]["main"]["temp"])+"°C | "+to_string((int)weather[i]["wind"]["speed"])+"м/с | "+to_string((int)weather[i]["main"]["humidity"])+"% | "+weather[i]["weather"][0]["description"].get<string>();
 	rmsg["message"]+=temp;
+	return rmsg;
+}
+
+table cmds::unicode(message::msg msg, table rmsg)
+{
+	string str = str::summ(msg.words, 1);
+	string out = "";
+	for(unsigned int i = 0; i<str.size();i++)
+		out+="&#"+to_string((unsigned int)str[i])+";";
+	str = out;
+	out = "";
+	for(unsigned int i = 0; i<str.size();i++)
+		out+="&#"+to_string((unsigned int)str[i])+";";
+	rmsg["message"]+=out;
+	return rmsg;
+}
+
+table cmds::ban(message::msg msg, table rmsg)
+{
+	module::ban::set(msg.words[1], true);
+	return rmsg;
+}
+
+table cmds::unban(message::msg msg, table rmsg)
+{
+	module::ban::set(msg.words[1], false);
 	return rmsg;
 }

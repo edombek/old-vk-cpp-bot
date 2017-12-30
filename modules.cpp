@@ -8,6 +8,7 @@ void module::start()
 	module::name::read();
 	module::money::read();
 	module::admin::read();
+	module::ban::read();
 }
 
 long long int oldbalance;
@@ -149,4 +150,36 @@ void module::admin::set(string id, bool admin)
 {
 	admins[id] = admin;
 	module::admin::save();
+}
+
+// ban system
+#define bans_path "bans.json"
+json bans;
+void module::ban::read()
+{
+	if(fs::exists(bans_path))
+	{
+		bans = json::parse(fs::readData(bans_path));
+	}else
+	{
+		bans["default"] = false;
+		module::ban::save();
+	}
+}
+void module::ban::save()
+{
+	fs::writeData(bans_path, bans.dump(4));
+}
+bool module::ban::get(string id)
+{
+	if(bans[id].is_null())
+	{
+		bans[id] = bans["default"];
+	}
+	return bans[id];
+}
+void module::ban::set(string id, bool ban)
+{
+	bans[id] = ban;
+	module::ban::save();
 }

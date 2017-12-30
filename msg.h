@@ -10,4 +10,5 @@ namespace message
 	json send(table msg);
 	table postTR(table rmsg);
 	bool toMe(string word, args names);
+	void newChatUser(message::msg msg);
 }

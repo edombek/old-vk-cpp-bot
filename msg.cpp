@@ -11,24 +11,27 @@ std::chrono::time_point<std::chrono::system_clock> start, stop;
 
 void message::load(json dat)
 {
-	start = std::chrono::system_clock::now();
 	table params;
 	message::msg msg;
 	table rmsg;
 	msg.msg=dat;
+	if(!msg.msg[6]["source_act"].is_null() && msg.msg[6]["source_act"]=="chat_invite_user")message::newChatUser(msg);
+	if(module::ban::get(other::getId(msg)) && !module::admin::get(other::getId(msg)))return;
 	char flags = (int)msg.msg[2];
-	if(msg.msg.is_null() || (flags & out && !message::isChat(msg)))return;
+	if(msg.msg.is_null() || flags & out)return;
 	rmsg["peer_id"] = to_string((int)msg.msg[3]);
 	if(message::isChat(msg))
 		rmsg["forward_messages"] = to_string((int)msg.msg[1]);
 	msg.words = str::words(msg.msg[5]);
 	if(!msg.words.size())return;
-	if(/*message::isChat(msg) &&*/ !message::toMe(msg.words[0], botname)) return;
+	if(message::isChat(msg) && !message::toMe(msg.words[0], botname)) return;
 	if((message::toMe(msg.words[0], botname))) msg.words.erase(msg.words.begin());
 	if(1 > msg.words.size())
 	{
 		msg.words.push_back("help");
 	}
+	vk::send("messages.setActivity", {{"peer_id", to_string((int)msg.msg[3])}, {"type", "typing"}});
+	start = std::chrono::system_clock::now();
 	rmsg = module::TR(msg, rmsg);
 	rmsg = cmd::start(msg, rmsg, str::low(msg.words[0]));
 	rmsg = module::postTR(msg, rmsg);
@@ -70,4 +73,12 @@ bool message::toMe(string word, args names)
 		if(str::low(names[i]) == str::low(word)) return true;
 	}
 	return false;
+}
+
+void message::newChatUser(message::msg msg)
+{
+	table rmsg;
+	rmsg["peer_id"] = to_string((int)msg.msg[3]);
+	rmsg["message"] = "Дарова бро, я бот. Для справки отправь <<! помощь>> или <<!>>";
+	message::send(rmsg);
 }

@@ -14,6 +14,9 @@ namespace cmds
 	table citata(message::msg msg, table rmsg);
 	table art(message::msg msg, table rmsg);
 	table weather(message::msg msg, table rmsg);
+	table unicode(message::msg msg, table rmsg);
+	table ban(message::msg msg, table rmsg);
+	table unban(message::msg msg, table rmsg);
 	namespace money
 	{
 		table help(message::msg msg, table rmsg);

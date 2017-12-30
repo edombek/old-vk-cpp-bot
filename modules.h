@@ -30,11 +30,11 @@ namespace module
 		void set(string id, bool admin);
 	}
 	
-	namespace phrase
+	namespace ban
 	{
 		void read();
 		void save();
-		string get();
-		void add(string add);
+		bool get(string id);
+		void set(string id, bool admin);
 	}
 }
